@@ -19,11 +19,11 @@ public class MeepMeepTesting {
                         drive.trajectorySequenceBuilder(startPose)
                                 .forward(14)
                                 .waitSeconds(1) //scan team prop
-                                .splineTo(new Vector2d(15,34), 0) //spline to according side
+                                .splineTo(new Vector2d(15,-34), 0) //spline to according side
                                 .waitSeconds(1) //drop pixel
                                 .forward(33) //adjust depending on location
-                                .strafeLeft(8) //adjust depending
-                                .waitSeconds(1) //score pixel
+                                .strafeRight(8) //adjust depending
+                                .waitSeconds(1) //score pixel//score pixel
                                 .build()
 
                 );
