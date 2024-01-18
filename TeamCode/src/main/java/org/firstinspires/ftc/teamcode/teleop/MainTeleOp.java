@@ -27,7 +27,7 @@ public class MainTeleOp extends LinearOpMode {
     double heading_drive;
 
     //constants
-    double DRIVE_POWER_SCALE = 0.8;
+    double DRIVE_POWER_SCALE = 1;
 
     @Override
     public void runOpMode() throws InterruptedException {
