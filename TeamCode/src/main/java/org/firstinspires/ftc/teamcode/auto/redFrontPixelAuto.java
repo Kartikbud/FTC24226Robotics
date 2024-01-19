@@ -29,17 +29,23 @@ public class redFrontPixelAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence rightSeq = drive.trajectorySequenceBuilder(nextPose)
-                .lineToSplineHeading(new Pose2d(18,-32, Math.toRadians(0))) //spline to according side
+                .lineToSplineHeading(new Pose2d(18,-34, Math.toRadians(0))) //spline to according side
                 .waitSeconds(1) //drop pixel
                 .forward(30) //adjust depending on location
-                .strafeRight(10) //adjust depending
+                .strafeRight(8) //adjust depending
                 .waitSeconds(1) //score pixel
-                .strafeRight(16)
+                .strafeLeft(30)
                 .turn(Math.toRadians(90))
                 .build();
 
         TrajectorySequence leftSeq = drive.trajectorySequenceBuilder(nextPose)
-                        .build();
+                .lineToSplineHeading(new Pose2d(6,-38, Math.toRadians(135)))
+                .waitSeconds(1) //drop pixel
+                .lineToSplineHeading(new Pose2d(48,-28, Math.toRadians(0))) //adjust depending on location
+                .waitSeconds(1) //score pixel
+                .strafeRight(30)
+                .turn(Math.toRadians(90))
+                .build();
 
         TrajectorySequence centreSeq = drive.trajectorySequenceBuilder(nextPose)
                         .build();
