@@ -71,68 +71,12 @@ public class MainTeleOp extends LinearOpMode {
             heading_drive = myRobotOrientation.firstAngle;
 
             mecanum_drive_field(axial_drive,lateral_drive,yaw_drive,heading_drive);
-
-
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
     public void mecanum_drive_field(double axial, double lateral, double yaw, double heading) {
         // Rotate the movement direction counter to the bot's rotation
         double rotX = lateral * Math.cos(-heading) - axial * Math.sin(-heading);
         double rotY = lateral * Math.sin(-heading) + axial * Math.cos(-heading);
-
-        rotX = rotX * 1.1;  // Counteract imperfect strafing
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio,
@@ -142,7 +86,18 @@ public class MainTeleOp extends LinearOpMode {
         double leftRearPower = (rotY - rotX + yaw) / denominator;
         double rightFrontPower = (rotY - rotX - yaw) / denominator;
         double rightRearPower = (rotY + rotX - yaw) / denominator;
+        leftFront.setPower(leftFrontPower);
+        leftRear.setPower(leftRearPower);
+        rightFront.setPower(rightFrontPower);
+        rightRear.setPower(rightRearPower);
+    }
 
+    public void mecanum_drive_robot(double axial, double lateral, double yaw) {
+        double denominator = Math.max(Math.abs(axial) + Math.abs(lateral) + Math.abs(yaw), 1);
+        double leftFrontPower = (axial + lateral + yaw) / denominator;
+        double leftRearPower = (axial - lateral + yaw) / denominator;
+        double rightFrontPower = (axial - lateral - yaw) / denominator;
+        double rightRearPower = (axial + lateral - yaw) / denominator;
         leftFront.setPower(leftFrontPower);
         leftRear.setPower(leftRearPower);
         rightFront.setPower(rightFrontPower);

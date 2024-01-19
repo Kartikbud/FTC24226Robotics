@@ -8,9 +8,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-@Autonomous(name = "blueFrontPixels")
+@Autonomous(name = "redFrontPixels")
 public class redFrontPixelAuto extends LinearOpMode {
 
+    String side = "Right";
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -20,7 +21,7 @@ public class redFrontPixelAuto extends LinearOpMode {
 
         drive.setPoseEstimate(startPose);
 
-        String side = "Right";
+
 
         TrajectorySequence initSeq = drive.trajectorySequenceBuilder(startPose)
                 .forward(14)
@@ -28,11 +29,13 @@ public class redFrontPixelAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence rightSeq = drive.trajectorySequenceBuilder(nextPose)
-                .splineTo(new Vector2d(15,-34), 0) //spline to according side
+                .lineToSplineHeading(new Pose2d(18,-32, Math.toRadians(0))) //spline to according side
                 .waitSeconds(1) //drop pixel
-                .forward(33) //adjust depending on location
-                .strafeRight(8) //adjust depending
+                .forward(30) //adjust depending on location
+                .strafeRight(10) //adjust depending
                 .waitSeconds(1) //score pixel
+                .strafeRight(16)
+                .turn(Math.toRadians(90))
                 .build();
 
         TrajectorySequence leftSeq = drive.trajectorySequenceBuilder(nextPose)
