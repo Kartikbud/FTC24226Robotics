@@ -31,11 +31,11 @@ public class blueFrontPixelAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        //RobotFunctions robotFunctions = new RobotFunctions();
 
-        leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
+        Subsystem subsystem = new Subsystem(hardwareMap);
+
+        /*leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
         rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
-        //robotFunctions.intialize();
 
         leftSlide.setDirection(DcMotorSimple.Direction.FORWARD);
         rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -49,10 +49,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
         rightArm = hardwareMap.get(Servo.class, "rightArm");
         leftArm = hardwareMap.get(Servo.class, "leftArm");
         leftArm.setDirection(Servo.Direction.FORWARD);
-        rightArm.setDirection(Servo.Direction.REVERSE);
-
-        //leftArm.setPosition(0);
-        //rightArm.setPosition(0);
+        rightArm.setDirection(Servo.Direction.REVERSE);*/
 
         Pose2d startPose = new Pose2d(12, 60, Math.toRadians(270));
 
@@ -104,7 +101,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
         TrajectorySequence testTraj = drive.trajectorySequenceBuilder(initSeq.end())
                 .forward(1)
                 .addTemporalMarker(() -> {
-                    slideUp(leftSlide, rightSlide);
+                    subsystem.slideUp();
                     //armUp(leftArm, rightArm);
                 })
                 .waitSeconds(7)
@@ -124,34 +121,6 @@ public class blueFrontPixelAuto extends LinearOpMode {
 
             drive.followTrajectorySequence(testTraj);
         }
-    }
-
-    public void armUp(Servo left, Servo right) {
-        left.setPosition(0.4);
-        right.setPosition(0.4);
-    }
-
-    public void armDown(Servo left, Servo right) {
-        left.setPosition(0);
-        right.setPosition(0);
-    }
-
-    public void slideUp(DcMotor left, DcMotor right) {
-        left.setTargetPosition(slideUpPos);
-        right.setTargetPosition(slideUpPos);
-        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        left.setPower(0.3);
-        right.setPower(0.31);
-    }
-
-    public void slideDown(DcMotor left,DcMotor right) {
-        left.setTargetPosition(slideDownPos);
-        right.setTargetPosition(slideDownPos);
-        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        left.setPower(0.3);
-        right.setPower(0.3);
     }
 }
 
