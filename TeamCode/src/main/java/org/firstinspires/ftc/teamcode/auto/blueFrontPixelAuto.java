@@ -142,7 +142,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
         left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         left.setPower(0.3);
-        right.setPower(0.31);
+        right.setPower(0.3);
     }
 
     public void slideDown(DcMotor left,DcMotor right) {
