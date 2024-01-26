@@ -20,6 +20,7 @@ public class MainTeleOp extends LinearOpMode {
 
     DcMotor rightFront, rightRear, leftFront, leftRear;
     DcMotor leftSlide, rightSlide;
+    DcMotor leftLift, rightLift;
     Servo leftArm, rightArm;
     IMU imu;
     IMU.Parameters myIMUparameters;
@@ -28,13 +29,16 @@ public class MainTeleOp extends LinearOpMode {
     double lateral_drive;
     double yaw_drive;
     double heading_drive;
+    double input_lift;
 
 
     //constants
     double DRIVE_POWER_SCALE = 0.9;
     double SLIDE_POWER_SCALE = 0.3;
+    double LIFT_POWER_SCALE = 0.75;
     int slideUpPos = 1800;
     int slideDownPos = 0;
+    int liftDownPos = 0;
     double armUpPos = 1;
     double armDownPos = 0;
 
@@ -62,12 +66,20 @@ public class MainTeleOp extends LinearOpMode {
         rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
         leftSlide.setDirection(DcMotor.Direction.FORWARD);
         rightSlide.setDirection(DcMotor.Direction.REVERSE);
-        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftSlide.setTargetPosition(slideDownPos);
-        rightSlide.setTargetPosition(slideDownPos);
-        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //lift initialization
+        leftLift = hardwareMap.get(DcMotor.class, "leftLift");
+        rightLift = hardwareMap.get(DcMotor.class, "rightLift");
+        leftLift.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightLift.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftLift.setTargetPosition(liftDownPos);
+        rightLift.setTargetPosition(liftDownPos);
+        leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //arm initialization
         leftArm = hardwareMap.get(Servo.class, "leftArm");
@@ -97,7 +109,11 @@ public class MainTeleOp extends LinearOpMode {
             yaw_drive = gamepad1.right_stick_x;
             heading_drive = myRobotOrientation.firstAngle;
 
+            input_lift = gamepad2.left_stick_y;
+
             mecanum_drive_field(axial_drive,lateral_drive,yaw_drive,heading_drive);
+            lift(input_lift);
+
             if (gamepad2.b) {
                 slide(slideUpPos);
             }
@@ -124,10 +140,10 @@ public class MainTeleOp extends LinearOpMode {
         double leftRearPower = (rotY - rotX + yaw) / denominator;
         double rightFrontPower = (rotY - rotX - yaw) / denominator;
         double rightRearPower = (rotY + rotX - yaw) / denominator;
-        leftFront.setPower(leftFrontPower);
-        leftRear.setPower(leftRearPower);
-        rightFront.setPower(rightFrontPower);
-        rightRear.setPower(rightRearPower);
+        leftFront.setPower(leftFrontPower * DRIVE_POWER_SCALE);
+        leftRear.setPower(leftRearPower * DRIVE_POWER_SCALE);
+        rightFront.setPower(rightFrontPower * DRIVE_POWER_SCALE);
+        rightRear.setPower(rightRearPower * DRIVE_POWER_SCALE);
     }
 
     public void mecanum_drive_robot(double axial, double lateral, double yaw) {
@@ -136,10 +152,10 @@ public class MainTeleOp extends LinearOpMode {
         double leftRearPower = (axial - lateral + yaw) / denominator;
         double rightFrontPower = (axial - lateral - yaw) / denominator;
         double rightRearPower = (axial + lateral - yaw) / denominator;
-        leftFront.setPower(leftFrontPower);
-        leftRear.setPower(leftRearPower);
-        rightFront.setPower(rightFrontPower);
-        rightRear.setPower(rightRearPower);
+        leftFront.setPower(leftFrontPower * DRIVE_POWER_SCALE);
+        leftRear.setPower(leftRearPower * DRIVE_POWER_SCALE);
+        rightFront.setPower(rightFrontPower * DRIVE_POWER_SCALE);
+        rightRear.setPower(rightRearPower * DRIVE_POWER_SCALE);
     }
 
     public void slide(int position) {
@@ -154,6 +170,31 @@ public class MainTeleOp extends LinearOpMode {
     public void arm(double position) {
         leftArm.setPosition(position);
         rightArm.setPosition(position);
+    }
+
+    public void lift(double power) {
+        if (power < 0) {
+            leftLift.setTargetPosition(leftLift.getCurrentPosition() + 100);
+            rightLift.setTargetPosition(rightLift.getCurrentPosition() + 100);
+            leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftLift.setPower(LIFT_POWER_SCALE);
+            rightLift.setPower(LIFT_POWER_SCALE);
+        } else if (power < 0) {
+            leftLift.setTargetPosition(leftLift.getCurrentPosition() - 100);
+            rightLift.setTargetPosition(rightLift.getCurrentPosition() - 100);
+            leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftLift.setPower(LIFT_POWER_SCALE);
+            rightLift.setPower(LIFT_POWER_SCALE);
+        } else {
+            leftLift.setTargetPosition(leftLift.getCurrentPosition());
+            rightLift.setTargetPosition(rightLift.getCurrentPosition());
+            leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftLift.setPower(LIFT_POWER_SCALE);
+            rightLift.setPower(LIFT_POWER_SCALE);
+        }
     }
 
 }
