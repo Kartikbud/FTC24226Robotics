@@ -15,19 +15,17 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 public class Subsystem {
 
-    DcMotor leftSlide;
-    DcMotor rightSlide;
-
-    Servo leftArm;
-    Servo rightArm;
-
+    DcMotor leftSlide, rightSlide;
+    Servo leftArm, rightArm;
     public int slideDownPos = 0;
     public int slideUpPos = 1600;
+    public double armDownPos = 0;
+    public double armUpPos = 1;
+
 
     public Subsystem (HardwareMap hardwareMap) {
         leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
         rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
-
         leftSlide.setDirection(DcMotorSimple.Direction.FORWARD);
         rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -44,13 +42,19 @@ public class Subsystem {
     }
 
     public void armUp() {
-        leftArm.setPosition(0.4);
-        rightArm.setPosition(0.4);
+        leftArm.setPosition(armUpPos);
+        rightArm.setPosition(armUpPos);
     }
 
     public void armDown() {
-        leftArm.setPosition(0);
-        rightArm.setPosition(0);
+        leftArm.setPosition(armDownPos);
+        rightArm.setPosition(armDownPos);
+    }
+
+    public void armPositionTo(double position) {
+        position = constrain((double) position, (double) armDownPos, (double) armUpPos);
+        leftArm.setPosition(position);
+        rightArm.setPosition(position);
     }
 
     public void slideUp() {
@@ -69,5 +73,23 @@ public class Subsystem {
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftSlide.setPower(0.3);
         rightSlide.setPower(0.3);
+    }
+
+    public void slidePositionTo(int position) {
+        position = constrain((int) position, (int) slideDownPos, (int) slideUpPos);
+        leftSlide.setTargetPosition(position);
+        rightSlide.setTargetPosition(position);
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftSlide.setPower(0.3);
+        rightSlide.setPower(0.3);
+
+    }
+
+    public double constrain(double value, double min, double max) {
+        return Math.min(Math.max(value, min), max);
+    }
+    public int constrain(int value, int min, int max) {
+        return Math.min(Math.max(value, min), max);
     }
 }
