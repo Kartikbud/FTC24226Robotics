@@ -45,7 +45,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
                     subsystem.armDown();
                     //right claw open
                 })
-                .waitSeconds(0.5)
+                .waitSeconds(2)
                 .addTemporalMarker( () -> {
                     subsystem.armUp();
                     //right claw close
@@ -53,10 +53,10 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 .forward(30) //adjust depending on location
                 .strafeLeft(8) //adjust depending
                 .addTemporalMarker( () -> {
-                    subsystem.slidePositionTo(100);
+                    subsystem.slidePositionTo(500);
                     //left claw open
                 })
-                .waitSeconds(0.5)
+                .waitSeconds(5)
                 .addTemporalMarker( () -> {
                     subsystem.slideDown();
                     //left claw close
@@ -71,17 +71,17 @@ public class blueFrontPixelAuto extends LinearOpMode {
                     subsystem.armDown();
                     //right claw open
                 })
-                .waitSeconds(0.5)
+                .waitSeconds(2)
                 .addTemporalMarker( () -> {
                     subsystem.armUp();
                     //right claw close
                 })
                 .lineToSplineHeading(new Pose2d(48,28, Math.toRadians(0))) //adjust depending on location
                 .addTemporalMarker( () -> {
-                    subsystem.slidePositionTo(100);
+                    subsystem.slidePositionTo(500);
                     //left claw open
                 })
-                .waitSeconds(0.5)
+                .waitSeconds(5)
                 .addTemporalMarker( () -> {
                     subsystem.slideDown();
                     //left claw close
@@ -97,17 +97,17 @@ public class blueFrontPixelAuto extends LinearOpMode {
                     subsystem.armDown();
                     //right claw open
                 })
-                .waitSeconds(0.5)
+                .waitSeconds(2)
                 .addTemporalMarker( () -> {
                     subsystem.armUp();
                     //right claw close
                 })
                 .lineToSplineHeading(new Pose2d(48,35, Math.toRadians(0))) //adjust depending on location
                 .addTemporalMarker( () -> {
-                    subsystem.slidePositionTo(100);
+                    subsystem.slidePositionTo(500);
                     //left claw open
                 })
-                .waitSeconds(0.5)
+                .waitSeconds(5)
                 .addTemporalMarker( () -> {
                     subsystem.slideDown();
                     //left claw close
