@@ -181,12 +181,12 @@ public class MainTeleOp extends LinearOpMode {
             leftLift.setPower(LIFT_POWER_SCALE);
             rightLift.setPower(LIFT_POWER_SCALE);
         } else if (power < 0) {
-            leftLift.setTargetPosition(leftLift.getCurrentPosition() - 100);
-            rightLift.setTargetPosition(rightLift.getCurrentPosition() - 100);
+            leftLift.setTargetPosition(leftLift.getCurrentPosition() + 100);
+            rightLift.setTargetPosition(rightLift.getCurrentPosition() + 100);
             leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            leftLift.setPower(LIFT_POWER_SCALE);
-            rightLift.setPower(LIFT_POWER_SCALE);
+            leftLift.setPower(-LIFT_POWER_SCALE);
+            rightLift.setPower(-LIFT_POWER_SCALE);
         } else {
             leftLift.setTargetPosition(leftLift.getCurrentPosition());
             rightLift.setTargetPosition(rightLift.getCurrentPosition());
