@@ -91,6 +91,11 @@ public class MainAuto extends LinearOpMode {
 
     public void redFront(SampleMecanumDrive drive, Subsystem subsystem) {
         drive.setPoseEstimate(redFrontPose);
+
+
+
+
+
     }
 
     public void redBack(SampleMecanumDrive drive, Subsystem subsystem) {
@@ -99,6 +104,67 @@ public class MainAuto extends LinearOpMode {
 
     public void blueFront(SampleMecanumDrive drive, Subsystem subsystem) {
         drive.setPoseEstimate(blueFrontPose);
+
+        TrajectorySequence initBlueFrontSeq = drive.trajectorySequenceBuilder(blueFrontPose)
+                .addTemporalMarker( () -> {
+                    subsystem.slideDown();
+                    subsystem.armUp();
+                    //claws closed
+                })
+                .forward(14)
+                .waitSeconds(1) //scan team prop
+                .build();
+
+        TrajectorySequence rightBlueFrontSeq = drive.trajectorySequenceBuilder(initBlueFrontSeq.end())
+                .lineToSplineHeading(new Pose2d(6,38, Math.toRadians(-135))) //spline to according side\
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                    //right claw open
+                })
+                .waitSeconds(2)
+                .addTemporalMarker( () -> {
+                    subsystem.armUp();
+                    //right claw close
+                })
+                .lineToSplineHeading(new Pose2d(48,28, Math.toRadians(0))) //adjust depending on location
+                .addTemporalMarker( () -> {
+                    subsystem.slidePositionTo(500);
+                    //left claw open
+                })
+                .waitSeconds(5)
+                .addTemporalMarker( () -> {
+                    subsystem.slideDown();
+                    //left claw close
+                })
+                .strafeLeft(29)
+                .turn(Math.toRadians(-90))
+                .build();
+
+        TrajectorySequence centreBlueFrontSeq = drive.trajectorySequenceBuilder(initBlueFrontSeq.end())
+                .lineToSplineHeading(new Pose2d(12,20, Math.toRadians(0)))
+                .strafeLeft(4)//spline to according side
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                    //right claw open
+                })
+                .waitSeconds(2)
+                .addTemporalMarker( () -> {
+                    subsystem.armUp();
+                    //right claw close
+                })
+                .lineToSplineHeading(new Pose2d(48,35, Math.toRadians(0))) //adjust depending on location
+                .addTemporalMarker( () -> {
+                    subsystem.slidePositionTo(500);
+                    //left claw open
+                })
+                .waitSeconds(5)
+                .addTemporalMarker( () -> {
+                    subsystem.slideDown();
+                    //left claw close
+                })
+                .strafeLeft(22)
+                .turn(Math.toRadians(-90))
+                .build();
     }
 
     public void blueBack(SampleMecanumDrive drive, Subsystem subsystem) {

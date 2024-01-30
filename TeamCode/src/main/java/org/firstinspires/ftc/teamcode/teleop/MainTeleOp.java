@@ -34,8 +34,8 @@ public class MainTeleOp extends LinearOpMode {
 
     //constants
     double DRIVE_POWER_SCALE = 0.9;
-    double SLIDE_POWER_SCALE = 0.3;
-    double LIFT_POWER_SCALE = 0.75;
+    double SLIDE_POWER_SCALE = 0.4;
+    double LIFT_POWER_SCALE = 1;
     int slideUpPos = 1800;
     int slideDownPos = 0;
     int liftDownPos = 0;
@@ -173,16 +173,16 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     public void lift(double power) {
-        if (power < 0) {
-            leftLift.setTargetPosition(leftLift.getCurrentPosition() + 100);
-            rightLift.setTargetPosition(rightLift.getCurrentPosition() + 100);
+        if (power > 0) {
+            leftLift.setTargetPosition(leftLift.getCurrentPosition() + 200);
+            rightLift.setTargetPosition(rightLift.getCurrentPosition() + 200);
             leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             leftLift.setPower(LIFT_POWER_SCALE);
             rightLift.setPower(LIFT_POWER_SCALE);
         } else if (power < 0) {
-            leftLift.setTargetPosition(leftLift.getCurrentPosition() + 100);
-            rightLift.setTargetPosition(rightLift.getCurrentPosition() + 100);
+            leftLift.setTargetPosition(leftLift.getCurrentPosition() - 200);
+            rightLift.setTargetPosition(rightLift.getCurrentPosition() - 200);
             leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             leftLift.setPower(-LIFT_POWER_SCALE);
