@@ -17,10 +17,31 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 @Autonomous(name = "blueFrontPixels")
 public class blueFrontPixelAuto extends LinearOpMode {
 
-    String side = "Right";
+    String side = "Center";
+
+    private CameraSubsytem cameraDetection = null;
+
+    boolean togglePreview = true;
+
+    public void HardwareStart() {
+        telemetry.addData("Object Creation", "Start");
+        telemetry.update();
+
+        cameraDetection = new CameraSubsytem(hardwareMap);
+
+        telemetry.addData("Object Creation", "Done");
+        telemetry.update();
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        HardwareStart();
+
+        String curAlliance = "red";
+
+        cameraDetection.setAlliance(curAlliance);
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         Subsystem subsystem = new Subsystem(hardwareMap);
@@ -29,15 +50,19 @@ public class blueFrontPixelAuto extends LinearOpMode {
 
         drive.setPoseEstimate(startPose);
 
+        //String side = cameraDetection.elementDetection(telemetry);
+
         TrajectorySequence initSeq = drive.trajectorySequenceBuilder(startPose)
-                .addTemporalMarker( () -> {
+                .lineToSplineHeading(new Pose2d(24, 45, Math.toRadians(-110)))
+                .build();
+                /*.addTemporalMarker( () -> {
                     subsystem.slideDown();
                     subsystem.armUp();
                     //claws closed
                 })
                 .forward(14)
                 .waitSeconds(1) //scan team prop
-                .build();
+                .build();*/
 
 
 
@@ -60,7 +85,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 .waitSeconds(5)
                 .addTemporalMarker( () -> {
                     subsystem.slideDown();
-                    //left claw close
+                    //left claw close fortnite
                 })
                 .strafeLeft(29)
                 .turn(Math.toRadians(-90))
@@ -92,16 +117,31 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 .turn(Math.toRadians(-90))
                 .build();
 
+        telemetry.update();
+
+        while (!opModeIsActive() && !isStopRequested()){
+            side = cameraDetection.elementDetection(telemetry);
+            //telemetry.addData("color", side);
+
+
+
+            telemetry.update();
+        }
+
         waitForStart();
 
         if (!isStopRequested()){
-            drive.followTrajectorySequence(initSeq);
+            //drive.followTrajectorySequence(initSeq);
+
+            //side = cameraDetection.elementDetection(telemetry);
+
+
             if (side.equals("Right")) {
                 drive.followTrajectorySequence(rightSeq);
-            } else if (side.equals("Centre")) {
+            } else if (side.equals("Center")) {
                 drive.followTrajectorySequence(centreSeq);
             } else {
-                drive.followTrajectorySequence(leftSeq);
+                drive.followTrajectorySequence(initSeq);
             }
         }
     }

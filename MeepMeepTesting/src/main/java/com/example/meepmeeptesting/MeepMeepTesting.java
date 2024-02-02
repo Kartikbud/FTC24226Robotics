@@ -17,28 +17,28 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(startPose)
-                                .lineToSplineHeading(new Pose2d(12,20, Math.toRadians(0)))
-                                .strafeLeft(4)//spline to according side
+                                .lineToSplineHeading(new Pose2d(24, 45, Math.toRadians(-110)))
+                                .lineToSplineHeading(new Pose2d(6,38, Math.toRadians(-135))) //spline to according side\
                                 .addTemporalMarker( () -> {
                                     //subsystem.armDown();
                                     //right claw open
                                 })
-                                .waitSeconds(0.5)
+                                .waitSeconds(2)
                                 .addTemporalMarker( () -> {
                                     //subsystem.armUp();
                                     //right claw close
                                 })
-                                .lineToSplineHeading(new Pose2d(48,35, Math.toRadians(0))) //adjust depending on location
+                                .lineToSplineHeading(new Pose2d(48,28, Math.toRadians(0))) //adjust depending on location
                                 .addTemporalMarker( () -> {
-                                    //subsystem.slidePositionTo(100);
+                                    //subsystem.slidePositionTo(500);
                                     //left claw open
                                 })
-                                .waitSeconds(0.5)
+                                .waitSeconds(5)
                                 .addTemporalMarker( () -> {
                                     //subsystem.slideDown();
                                     //left claw close
                                 })
-                                .strafeLeft(22)
+                                .strafeLeft(29)
                                 .turn(Math.toRadians(-90))
                                 .build()
 

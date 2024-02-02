@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -22,6 +23,7 @@ public class MainTeleOp extends LinearOpMode {
     DcMotor leftSlide, rightSlide;
     DcMotor leftLift, rightLift;
     Servo leftArm, rightArm;
+    Servo leftClaw, rightClaw;
     IMU imu;
     IMU.Parameters myIMUparameters;
     Orientation myRobotOrientation;
@@ -30,6 +32,7 @@ public class MainTeleOp extends LinearOpMode {
     double yaw_drive;
     double heading_drive;
     double input_lift;
+    double liftDistance;
 
 
     //constants
@@ -39,8 +42,19 @@ public class MainTeleOp extends LinearOpMode {
     int slideUpPos = 1800;
     int slideDownPos = 0;
     int liftDownPos = 0;
-    double armUpPos = 1;
-    double armDownPos = 0;
+    double armUpPos = 0.583;
+    double armDownPos = 0.02;
+    double liftCountPerRev = 1440;
+    double slideCountPerRev = 383.6;
+    double diameterLift = 0.88;
+    double diameterSlide = 1.4;
+    double liftCountPerInch = liftCountPerRev / (diameterLift * Math.PI);
+    double slideCountPerInch = slideCountPerRev / (diameterSlide + Math.PI);
+    double slideMaxDistance = 20.3418124319;
+    double slideMinDistance = 0;
+
+    double clawClosed = 1;
+    double clawOpen = 0.85;
 
 
 
@@ -87,6 +101,13 @@ public class MainTeleOp extends LinearOpMode {
         leftArm.setDirection(Servo.Direction.FORWARD);
         rightArm.setDirection(Servo.Direction.REVERSE);
 
+        //claw initialization
+        leftClaw = hardwareMap.get(Servo.class, "leftClaw");
+        rightClaw = hardwareMap.get(Servo.class, "rightClaw");
+        rightClaw.setDirection(Servo.Direction.FORWARD);
+        leftClaw.setDirection(Servo.Direction.REVERSE);
+
+
         //imu initialization
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
@@ -112,19 +133,34 @@ public class MainTeleOp extends LinearOpMode {
             input_lift = gamepad2.left_stick_y;
 
             mecanum_drive_field(axial_drive,lateral_drive,yaw_drive,heading_drive);
-            lift(input_lift);
+            //lift(input_lift);
 
             if (gamepad2.b) {
-                slide(slideUpPos);
+                slide(slideMaxDistance);
             }
             if (gamepad2.left_stick_button) {
-                slide(slideDownPos);
+                slide(slideMinDistance);
             }
             if (gamepad2.x) {
-                arm(armDownPos);
+                armDown();
             } else {
-                arm(armUpPos);
+                armUp();
             }
+            if (gamepad2.right_bumper) {
+                rightClaw.setPosition(clawOpen);
+            } else {
+                rightClaw(clawClosed);
+            }
+            if (gamepad2.left_bumper) {
+                leftClaw(clawOpen);
+            } else {
+                leftClaw(clawClosed);
+            }
+
+            telemetry.addData("right", rightArm.getPosition());
+            telemetry.addData("left", leftArm.getPosition());
+            telemetry.update();
+
         }
     }
     public void mecanum_drive_field(double axial, double lateral, double yaw, double heading) {
@@ -158,16 +194,45 @@ public class MainTeleOp extends LinearOpMode {
         rightRear.setPower(rightRearPower * DRIVE_POWER_SCALE);
     }
 
-    public void slide(int position) {
-        leftSlide.setTargetPosition(position);
-        rightSlide.setTargetPosition(position);
+    public void slide(double distance) {
+
+
+        if ((slideCountPerInch * distance) > leftSlide.getCurrentPosition()) {
+            liftDistance = distance - 4;
+        } else {
+            liftDistance = distance;
+        }
+
+        leftSlide.setTargetPosition((int) (slideCountPerInch * distance));
+        rightSlide.setTargetPosition((int) (slideCountPerInch * distance));
+        leftLift.setTargetPosition((int) (liftCountPerInch * liftDistance));
+        rightLift.setTargetPosition((int) (liftCountPerInch * liftDistance));
         leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftLift.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftSlide.setPower(SLIDE_POWER_SCALE);
         rightSlide.setPower(SLIDE_POWER_SCALE);
+        leftLift.setPower(0.625);
+        rightLift.setPower(0.625);
+
+
     }
 
-    public void arm(double position) {
+    public void armUp() {
+        leftArm.setPosition(armUpPos);
+        rightArm.setPosition(armUpPos);
+    }
+
+    public void armDown() {
+        //rightArm.setPosition(Range.clip(0, 1, rightArm.getPosition() + .01));
+        //leftArm.setPosition(Range.clip(0, 1, leftArm.getPosition() + .01));
+
+        leftArm.setPosition(armDownPos);
+        rightArm.setPosition(armDownPos);
+    }
+
+    public void armVarPos(double position) {
         leftArm.setPosition(position);
         rightArm.setPosition(position);
     }
@@ -195,6 +260,14 @@ public class MainTeleOp extends LinearOpMode {
             leftLift.setPower(LIFT_POWER_SCALE);
             rightLift.setPower(LIFT_POWER_SCALE);
         }
+    }
+
+    public void rightClaw (double position) {
+        rightClaw.setPosition(position);
+    }
+
+    public void leftClaw (double position) {
+        leftClaw.setPosition(position);
     }
 
 }
