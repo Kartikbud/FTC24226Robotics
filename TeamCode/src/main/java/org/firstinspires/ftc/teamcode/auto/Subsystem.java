@@ -17,10 +17,15 @@ public class Subsystem {
 
     DcMotor leftSlide, rightSlide;
     Servo leftArm, rightArm;
+
+    Servo leftClaw, rightClaw;
     public int slideDownPos = 0;
     public int slideUpPos = 1600;
     public double armDownPos = 0;
-    public double armUpPos = 1;
+    public double armUpPos = 0.583;
+
+    double clawClosed = 1;
+    double clawOpen = 0.85;
 
 
     public Subsystem (HardwareMap hardwareMap) {
@@ -39,6 +44,11 @@ public class Subsystem {
         leftArm = hardwareMap.get(Servo.class, "leftArm");
         leftArm.setDirection(Servo.Direction.FORWARD);
         rightArm.setDirection(Servo.Direction.REVERSE);
+
+        leftClaw = hardwareMap.get(Servo.class, "leftClaw");
+        rightClaw = hardwareMap.get(Servo.class, "rightClaw");
+        rightClaw.setDirection(Servo.Direction.FORWARD);
+        leftClaw.setDirection(Servo.Direction.REVERSE);
     }
 
     public void armUp() {
@@ -84,6 +94,22 @@ public class Subsystem {
         leftSlide.setPower(0.3);
         rightSlide.setPower(0.3);
 
+    }
+
+    public void rightClawOpen () {
+        rightClaw.setPosition(clawOpen);
+    }
+
+    public void rightClawClosed () {
+        rightClaw.setPosition(clawClosed);
+    }
+
+    public void leftClawOpen () {
+        leftClaw.setPosition(clawOpen);
+    }
+
+    public void leftClawClosed () {
+        leftClaw.setPosition(clawClosed);
     }
 
     public double constrain(double value, double min, double max) {

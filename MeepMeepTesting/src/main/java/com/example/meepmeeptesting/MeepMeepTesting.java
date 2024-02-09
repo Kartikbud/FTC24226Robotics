@@ -17,28 +17,47 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(startPose)
-                                .lineToSplineHeading(new Pose2d(24, 45, Math.toRadians(-110)))
-                                .lineToSplineHeading(new Pose2d(6,38, Math.toRadians(-135))) //spline to according side\
+                                .addTemporalMarker( () -> {
+                                    //subsystem.rightClawClosed();
+                                    //subsystem.leftClawClosed();
+                                })
+                                .waitSeconds(1)
+                                .addTemporalMarker( () -> {
+                                    //subsystem.armUp();
+                                })
+                                .forward(14)
+                                .lineToSplineHeading(new Pose2d(35,25, Math.toRadians(180)))
+                                //.strafeRight(8)
                                 .addTemporalMarker( () -> {
                                     //subsystem.armDown();
-                                    //right claw open
                                 })
+                                .back(3)
+                                .waitSeconds(1.5)
+                                .forward(12)
+                                .addTemporalMarker( () -> {
+                                    //subsystem.leftClawOpen();
+                                })
+                                .waitSeconds(1.5)
+                                .back(10)
                                 .waitSeconds(2)
                                 .addTemporalMarker( () -> {
                                     //subsystem.armUp();
-                                    //right claw close
                                 })
-                                .lineToSplineHeading(new Pose2d(48,28, Math.toRadians(0))) //adjust depending on location
+                                //.strafeRight(20)
+                                .lineToSplineHeading(new Pose2d(43,38, Math.toRadians(0))) //adjust depending on location
                                 .addTemporalMarker( () -> {
-                                    //subsystem.slidePositionTo(500);
-                                    //left claw open
+                                    //subsystem.slidePositionTo(1000);
                                 })
                                 .waitSeconds(5)
                                 .addTemporalMarker( () -> {
-                                    //subsystem.slideDown();
-                                    //left claw close
+                                    //subsystem.rightClawOpen();
                                 })
-                                .strafeLeft(29)
+                                .waitSeconds(1)
+                                .addTemporalMarker( () -> {
+                                    //subsystem.slideDown();
+                                })
+                                .waitSeconds(2)
+                                .strafeLeft(18)
                                 .turn(Math.toRadians(-90))
                                 .build()
 

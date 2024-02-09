@@ -53,16 +53,18 @@ public class blueFrontPixelAuto extends LinearOpMode {
         //String side = cameraDetection.elementDetection(telemetry);
 
         TrajectorySequence initSeq = drive.trajectorySequenceBuilder(startPose)
-                .lineToSplineHeading(new Pose2d(24, 45, Math.toRadians(-110)))
-                .build();
-                /*.addTemporalMarker( () -> {
-                    subsystem.slideDown();
-                    subsystem.armUp();
-                    //claws closed
+                .addTemporalMarker( () -> {
+                    subsystem.rightClawClosed();
+                    subsystem.leftClawClosed();
                 })
+                .waitSeconds(1)
+                .addTemporalMarker( () -> {
+                    subsystem.armUp();
+                    //left claw close
+                })
+                .waitSeconds(1)
                 .forward(14)
-                .waitSeconds(1) //scan team prop
-                .build();*/
+                .build();
 
 
 
@@ -92,32 +94,76 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence centreSeq = drive.trajectorySequenceBuilder(initSeq.end())
-                .lineToSplineHeading(new Pose2d(12,20, Math.toRadians(0)))
-                .strafeLeft(4)//spline to according side
+                .lineToSplineHeading(new Pose2d(35,21, Math.toRadians(180)))
+                //.strafeRight(8)
                 .addTemporalMarker( () -> {
                     subsystem.armDown();
-                    //right claw open
                 })
+                .back(3)
+                .waitSeconds(1.5)
+                .forward(12)
+                .addTemporalMarker( () -> {
+                    subsystem.leftClawOpen();
+                })
+                .waitSeconds(1.5)
+                .back(10)
                 .waitSeconds(2)
                 .addTemporalMarker( () -> {
                     subsystem.armUp();
-                    //right claw close
                 })
-                .lineToSplineHeading(new Pose2d(48,35, Math.toRadians(0))) //adjust depending on location
+                //.strafeRight(20)
+                .lineToSplineHeading(new Pose2d(46,38, Math.toRadians(0))) //adjust depending on location
                 .addTemporalMarker( () -> {
-                    subsystem.slidePositionTo(500);
-                    //left claw open
+                    subsystem.slidePositionTo(1000);
                 })
                 .waitSeconds(5)
                 .addTemporalMarker( () -> {
-                    subsystem.slideDown();
-                    //left claw close
+                    subsystem.rightClawOpen();
                 })
-                .strafeLeft(22)
+                .waitSeconds(1)
+                .addTemporalMarker( () -> {
+                    subsystem.slideDown();
+                })
+                .waitSeconds(2)
+                .strafeLeft(18)
                 .turn(Math.toRadians(-90))
                 .build();
 
-        telemetry.update();
+        TrajectorySequence leftSeq = drive.trajectorySequenceBuilder(initSeq.end())
+                .lineToSplineHeading(new Pose2d(21,34, Math.toRadians(-90))) //spline to according side
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(3)
+                .waitSeconds(1.5)
+                .forward(4)
+                .addTemporalMarker( () -> {
+                    subsystem.leftClawOpen();
+                })
+                .waitSeconds(1.5)
+                .back(10)
+                .waitSeconds(2)
+                .addTemporalMarker( () -> {
+                    subsystem.armUp();
+                })
+                .lineToSplineHeading(new Pose2d(43,44, Math.toRadians(0)))
+                .addTemporalMarker( () -> {
+                    subsystem.slidePositionTo(1000);
+                })
+                .waitSeconds(5)
+                .addTemporalMarker( () -> {
+                    subsystem.rightClawOpen();
+                })
+                .waitSeconds(1)
+                .addTemporalMarker( () -> {
+                    subsystem.slideDown();
+                })
+                .waitSeconds(2)
+                .strafeLeft(18)
+                .turn(Math.toRadians(-90))
+                .build();
+
+        //telemetry.update();
 
         while (!opModeIsActive() && !isStopRequested()){
             side = cameraDetection.elementDetection(telemetry);
@@ -131,7 +177,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
         waitForStart();
 
         if (!isStopRequested()){
-            //drive.followTrajectorySequence(initSeq);
+            drive.followTrajectorySequence(initSeq);
 
             //side = cameraDetection.elementDetection(telemetry);
 
@@ -141,7 +187,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
             } else if (side.equals("Center")) {
                 drive.followTrajectorySequence(centreSeq);
             } else {
-                drive.followTrajectorySequence(initSeq);
+                drive.followTrajectorySequence(leftSeq);
             }
         }
     }

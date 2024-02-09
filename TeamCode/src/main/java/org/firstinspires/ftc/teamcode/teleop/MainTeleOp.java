@@ -37,12 +37,12 @@ public class MainTeleOp extends LinearOpMode {
 
     //constants
     double DRIVE_POWER_SCALE = 0.9;
-    double SLIDE_POWER_SCALE = 0.4;
+    double SLIDE_POWER_SCALE = 0.62;
     double LIFT_POWER_SCALE = 1;
     int slideUpPos = 1800;
     int slideDownPos = 0;
     int liftDownPos = 0;
-    double armUpPos = 0.583;
+    double armUpPos = 0.6;
     double armDownPos = 0.02;
     double liftCountPerRev = 1440;
     double slideCountPerRev = 383.6;
@@ -141,13 +141,16 @@ public class MainTeleOp extends LinearOpMode {
             if (gamepad2.left_stick_button) {
                 slide(slideMinDistance);
             }
+            if (gamepad2.a) {
+                slide(slideMaxDistance/2);
+            }
             if (gamepad2.x) {
                 armDown();
             } else {
                 armUp();
             }
             if (gamepad2.right_bumper) {
-                rightClaw.setPosition(clawOpen);
+                rightClaw(clawOpen);
             } else {
                 rightClaw(clawClosed);
             }
@@ -213,8 +216,8 @@ public class MainTeleOp extends LinearOpMode {
         rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftSlide.setPower(SLIDE_POWER_SCALE);
         rightSlide.setPower(SLIDE_POWER_SCALE);
-        leftLift.setPower(0.625);
-        rightLift.setPower(0.625);
+        leftLift.setPower(SLIDE_POWER_SCALE/0.64);
+        rightLift.setPower(SLIDE_POWER_SCALE/0.64);
 
 
     }
