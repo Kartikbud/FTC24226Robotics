@@ -39,10 +39,9 @@ public class MainTeleOp extends LinearOpMode {
     double DRIVE_POWER_SCALE = 0.9;
     double SLIDE_POWER_SCALE = 0.62;
     double LIFT_POWER_SCALE = 1;
-    int slideUpPos = 1800;
-    int slideDownPos = 0;
+    double FINE_DRIVE_POWER_SCALE = DRIVE_POWER_SCALE/3;
     int liftDownPos = 0;
-    double armUpPos = 0.6;
+    double armUpPos = 0.75;
     double armDownPos = 0.02;
     double liftCountPerRev = 1440;
     double slideCountPerRev = 383.6;
@@ -132,33 +131,63 @@ public class MainTeleOp extends LinearOpMode {
 
             input_lift = gamepad2.left_stick_y;
 
-            mecanum_drive_field(axial_drive,lateral_drive,yaw_drive,heading_drive);
-            //lift(input_lift);
+            if (gamepad1.dpad_down) {
+                axial_drive = -FINE_DRIVE_POWER_SCALE;
+            }
+
+            if (gamepad1.dpad_left) {
+                lateral_drive = -FINE_DRIVE_POWER_SCALE;
+            }
+
+            if (gamepad1.dpad_right) {
+                lateral_drive = FINE_DRIVE_POWER_SCALE;
+            }
+
+            if (gamepad1.dpad_up) {
+                axial_drive = FINE_DRIVE_POWER_SCALE;
+            }
+
+            if (gamepad1.right_bumper) {
+                yaw_drive = FINE_DRIVE_POWER_SCALE;
+            }
+
+            if (gamepad1.left_bumper) {
+                yaw_drive = -FINE_DRIVE_POWER_SCALE;
+            }
+
 
             if (gamepad2.b) {
                 slide(slideMaxDistance);
             }
+
             if (gamepad2.left_stick_button) {
                 slide(slideMinDistance);
             }
+
             if (gamepad2.a) {
                 slide(slideMaxDistance/2);
             }
+
             if (gamepad2.x) {
                 armDown();
             } else {
                 armUp();
             }
+
             if (gamepad2.right_bumper) {
                 rightClaw(clawOpen);
             } else {
                 rightClaw(clawClosed);
             }
+
             if (gamepad2.left_bumper) {
                 leftClaw(clawOpen);
             } else {
                 leftClaw(clawClosed);
             }
+
+            mecanum_drive_field(axial_drive,lateral_drive,yaw_drive,heading_drive);
+            //lift(input_lift);
 
             telemetry.addData("right", rightArm.getPosition());
             telemetry.addData("left", leftArm.getPosition());
