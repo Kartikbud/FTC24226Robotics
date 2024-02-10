@@ -24,6 +24,8 @@ public class MainTeleOp extends LinearOpMode {
     Servo drone;
     IMU imu;
     Orientation myRobotOrientation;
+    double initYaw;
+    double adjustedYaw;
     double axial_drive;
     double lateral_drive;
     double yaw_drive;
@@ -115,6 +117,7 @@ public class MainTeleOp extends LinearOpMode {
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         myRobotOrientation = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        initYaw = myRobotOrientation.firstAngle;
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -124,11 +127,11 @@ public class MainTeleOp extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            myRobotOrientation = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
-            axial_drive = -gamepad1.left_stick_y;
+            myRobotOrientation = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
             lateral_drive = gamepad1.left_stick_x;
+            axial_drive = -gamepad1.left_stick_y;
             yaw_drive = gamepad1.right_stick_x;
-            heading_drive = myRobotOrientation.firstAngle;
 
             input_lift = gamepad2.left_stick_y;
 
@@ -230,7 +233,7 @@ public class MainTeleOp extends LinearOpMode {
                 leftClaw(clawClosedPos);
             }
 
-            mecanum_drive_field(axial_drive,lateral_drive,yaw_drive,heading_drive);
+            mecanum_drive_field(axial_drive,lateral_drive,yaw_drive,myRobotOrientation.firstAngle);
             //mecanum_drive_robot(axial_drive,lateral_drive,yaw_drive);
 
 
@@ -241,18 +244,28 @@ public class MainTeleOp extends LinearOpMode {
         }
     }
     public void mecanum_drive_field(double axial, double lateral, double yaw, double heading) {
-        // Rotate the movement direction counter to the bot's rotation
-        double rotX = lateral * Math.cos(-heading) - axial * Math.sin(-heading);
-        double rotY = lateral * Math.sin(-heading) + axial * Math.cos(-heading);
 
-        // Denominator is the largest motor power (absolute value) or 1
-        // This ensures all the powers maintain the same ratio,
-        // but only if at least one is out of the range [-1, 1]
-        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(yaw), 1);
-        double leftFrontPower = (rotY + rotX + yaw) / denominator;
-        double leftRearPower = (rotY - rotX + yaw) / denominator;
-        double rightFrontPower = (rotY - rotX - yaw) / denominator;
-        double rightRearPower = (rotY + rotX - yaw) / denominator;
+        double zeroedYaw = -initYaw + heading;
+        double theta = Math.atan2(axial, lateral) * 180/Math.PI;
+        double realTheta = (360 - zeroedYaw) + theta;
+        double power = Math.hypot(lateral, axial);
+
+        double sin = Math.sin((realTheta * (Math.PI / 180)) - (Math.PI / 4));
+        double cos = Math.cos((realTheta * (Math.PI / 180)) - (Math.PI / 4));
+        double maxSinCos = Math.max(Math.abs(sin), Math.abs(cos));
+
+        double leftFrontPower = (power * cos / maxSinCos + yaw);
+        double leftRearPower = (power * sin / maxSinCos + yaw);
+        double rightFrontPower = (power * sin / maxSinCos - yaw);
+        double rightRearPower = (power * cos / maxSinCos - yaw);
+
+        if ((power + Math.abs(yaw)) > 1) {
+            leftFrontPower /= power + yaw;
+            leftRearPower /= power + yaw;
+            rightFrontPower /= power - yaw;
+            rightRearPower /= power - yaw;
+        }
+
         leftFront.setPower(leftFrontPower * DRIVE_POWER_SCALE);
         leftRear.setPower(leftRearPower * DRIVE_POWER_SCALE);
         rightFront.setPower(rightFrontPower * DRIVE_POWER_SCALE);
@@ -273,7 +286,7 @@ public class MainTeleOp extends LinearOpMode {
 
     public void slideLift(double distance) {
         if ((slideCountPerInch * distance) > leftSlide.getCurrentPosition()) {
-            liftDistance = distance - 4;
+            liftDistance = distance - 5;
         } else {
             liftDistance = distance;
         }
@@ -361,20 +374,15 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     public void driveCorrection(double heading) {
-        if ((-45 <= heading) && (heading <= 45)) {
-            if (-45 <= heading && heading < 0) {
-                yaw_drive = 0.3;
-                if (heading >= -1 && heading <= 1){
-                    return;
-                }
-            } else if (heading <= 45) {
-                yaw_drive = -0.3;
-                if (heading >= -1 && heading <= 1){
-                    return;
+        while (!(heading >= -1 && heading <= 1)) {
+            if ((-45 <= heading) && (heading <= 45)) {
+                if (-45 <= heading && heading < 0) {
+                    yaw_drive = 0.3;
+                } else if (heading <= 45) {
+                    yaw_drive = -0.3;
                 }
             }
         }
-
 
 
 

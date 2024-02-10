@@ -58,6 +58,7 @@ public class redFrontPixelAuto extends LinearOpMode {
                     subsystem.armUp();
                     //left claw close
                 })
+                .waitSeconds(0.5)
                 .forward(14)
                 .build();
 
@@ -78,7 +79,7 @@ public class redFrontPixelAuto extends LinearOpMode {
                 .addTemporalMarker( () -> {
                     //subsystem.armUp();
                 })
-                .lineToSplineHeading(new Pose2d(43,-44, Math.toRadians(0)))
+                .lineToSplineHeading(new Pose2d(46,-44, Math.toRadians(0)))
                 .addTemporalMarker( () -> {
                     //subsystem.slidePositionTo(1000);
                 })
@@ -105,7 +106,7 @@ public class redFrontPixelAuto extends LinearOpMode {
                 .waitSeconds(1.5)
                 .forward(12)
                 .addTemporalMarker( () -> {
-                    subsystem.leftClawOpen();
+                    subsystem.rightClawOpen();
                 })
                 .waitSeconds(1.5)
                 .back(10)
@@ -114,13 +115,13 @@ public class redFrontPixelAuto extends LinearOpMode {
                     subsystem.armUp();
                 })
                 //.strafeRight(20)
-                .lineToSplineHeading(new Pose2d(43,-28, Math.toRadians(0))) //adjust depending on location
+                .lineToSplineHeading(new Pose2d(46,-28, Math.toRadians(0))) //adjust depending on location
                 .addTemporalMarker( () -> {
                     subsystem.slidePositionTo(1000);
                 })
                 .waitSeconds(5)
                 .addTemporalMarker( () -> {
-                    subsystem.rightClawOpen();
+                    subsystem.leftClawOpen();
                 })
                 .waitSeconds(1)
                 .addTemporalMarker( () -> {
@@ -150,7 +151,7 @@ public class redFrontPixelAuto extends LinearOpMode {
                     subsystem.armUp();
                 })
                 //.strafeRight(20)
-                .lineToSplineHeading(new Pose2d(43,-38, Math.toRadians(0))) //adjust depending on location
+                .lineToSplineHeading(new Pose2d(46,-34, Math.toRadians(0))) //adjust depending on location
                 .addTemporalMarker( () -> {
                     subsystem.slidePositionTo(1000);
                 })
