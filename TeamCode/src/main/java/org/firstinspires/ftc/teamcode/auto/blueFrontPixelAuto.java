@@ -112,7 +112,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 })
                 .back(3)
                 .waitSeconds(1.5)
-                .forward(12)
+                .forward(14)
                 .addTemporalMarker( () -> {
                     subsystem.leftClawOpen();
                 })
@@ -123,7 +123,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
                     subsystem.armUp();
                 })
                 //.strafeRight(20)
-                .lineToSplineHeading(new Pose2d(46,38, Math.toRadians(0))) //adjust depending on location
+                .lineToSplineHeading(new Pose2d(46,32, Math.toRadians(0))) //adjust depending on location
                 .addTemporalMarker( () -> {
                     subsystem.slidePositionTo(1000);
                 })
