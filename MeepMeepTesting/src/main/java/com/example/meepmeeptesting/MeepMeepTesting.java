@@ -10,7 +10,7 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(700);
 
-        Pose2d startPose = new Pose2d(12, 60, Math.toRadians(270));
+        Pose2d startPose = new Pose2d(12, -60, Math.toRadians(-270));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -26,7 +26,7 @@ public class MeepMeepTesting {
                                     //subsystem.armUp();
                                 })
                                 .forward(14)
-                                .lineToSplineHeading(new Pose2d(35,25, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(10,-35, Math.toRadians(180)))
                                 //.strafeRight(8)
                                 .addTemporalMarker( () -> {
                                     //subsystem.armDown();
@@ -44,7 +44,7 @@ public class MeepMeepTesting {
                                     //subsystem.armUp();
                                 })
                                 //.strafeRight(20)
-                                .lineToSplineHeading(new Pose2d(43,38, Math.toRadians(0))) //adjust depending on location
+                                .lineToSplineHeading(new Pose2d(43,-28, Math.toRadians(0))) //adjust depending on location
                                 .addTemporalMarker( () -> {
                                     //subsystem.slidePositionTo(1000);
                                 })
@@ -57,8 +57,8 @@ public class MeepMeepTesting {
                                     //subsystem.slideDown();
                                 })
                                 .waitSeconds(2)
-                                .strafeLeft(18)
-                                .turn(Math.toRadians(-90))
+                                .strafeRight(28)
+                                .turn(Math.toRadians(90))
                                 .build()
 
 

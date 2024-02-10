@@ -46,13 +46,13 @@ public class MainTeleOp extends LinearOpMode {
     double diameterSlide = 1.4;
     double liftCountPerInch = liftCountPerRev / (diameterLift * Math.PI);
     double slideCountPerInch = slideCountPerRev / (diameterSlide + Math.PI);
-    double slideMaxDistance = 21.5;//20.3418124319;
+    double slideMaxDistance = 20.3418124319;
     double slideMinDistance = 0;
     double clawClosedPos = 1;
     double clawOpenPos = 0.85;
-    double droneLockPos = 0;
-    double droneUnlockPos = 1;
-
+    double droneLockPos = 1;
+    double droneUnlockPos = 0;
+    boolean slideLiftSyncOn = true;
 
 
     @Override
@@ -160,20 +160,50 @@ public class MainTeleOp extends LinearOpMode {
                 driveCorrection(myRobotOrientation.firstAngle);
             }
 
-            if (gamepad2.b) {
-                slide(slideMaxDistance);
+            if (gamepad1.b) {
+
             }
 
-            if (gamepad2.left_stick_button) {
-                slide(slideMinDistance);
+            if (gamepad2.dpad_right) {
+                slideLiftSyncOn = false;
+            } else if (gamepad2.dpad_left) {
+                slideLiftSyncOn = true;
             }
 
-            if (gamepad1.left_stick_button) {
-                slide(slideMinDistance);
-            }
+            if (slideLiftSyncOn) {
+                if (gamepad2.b) {
+                    slideLift(slideMaxDistance);
+                }
 
-            if (gamepad2.a) {
-                slide(slideMaxDistance/2);
+                if (gamepad2.left_stick_button) {
+                    slideLift(slideMinDistance);
+                }
+
+                if (gamepad1.left_stick_button) {
+                    slideLift(slideMinDistance);
+                }
+
+                if (gamepad2.a) {
+                    slideLift(slideMaxDistance/2);
+                }
+            } else {
+                lift(input_lift);
+
+                if (gamepad2.b) {
+                    slide(slideMaxDistance);
+                }
+
+                if (gamepad2.left_stick_button) {
+                    slide(slideMinDistance);
+                }
+
+                if (gamepad1.left_stick_button) {
+                    slide(slideMinDistance);
+                }
+
+                if (gamepad2.a) {
+                    slide(slideMaxDistance/2);
+                }
             }
 
             if (gamepad2.x) {
@@ -201,7 +231,8 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             mecanum_drive_field(axial_drive,lateral_drive,yaw_drive,heading_drive);
-            lift(input_lift);
+            //mecanum_drive_robot(axial_drive,lateral_drive,yaw_drive);
+
 
             telemetry.addData("right", rightArm.getPosition());
             telemetry.addData("left", leftArm.getPosition());
@@ -240,9 +271,7 @@ public class MainTeleOp extends LinearOpMode {
         rightRear.setPower(rightRearPower * DRIVE_POWER_SCALE);
     }
 
-    public void slide(double distance) {
-
-
+    public void slideLift(double distance) {
         if ((slideCountPerInch * distance) > leftSlide.getCurrentPosition()) {
             liftDistance = distance - 4;
         } else {
@@ -261,8 +290,15 @@ public class MainTeleOp extends LinearOpMode {
         rightSlide.setPower(SLIDE_POWER_SCALE);
         leftLift.setPower(SLIDE_POWER_SCALE/0.64);
         rightLift.setPower(SLIDE_POWER_SCALE/0.64);
+    }
 
-
+    public void slide(double distance) {
+        leftSlide.setTargetPosition((int) (slideCountPerInch * distance));
+        rightSlide.setTargetPosition((int) (slideCountPerInch * distance));
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftSlide.setPower(SLIDE_POWER_SCALE);
+        rightSlide.setPower(SLIDE_POWER_SCALE);
     }
 
     public void armUp() {
@@ -326,14 +362,26 @@ public class MainTeleOp extends LinearOpMode {
 
     public void driveCorrection(double heading) {
         if ((-45 <= heading) && (heading <= 45)) {
-            if (-45 <= heading) {
+            if (-45 <= heading && heading < 0) {
                 yaw_drive = 0.3;
+                if (heading >= -1 && heading <= 1){
+                    return;
+                }
             } else if (heading <= 45) {
                 yaw_drive = -0.3;
+                if (heading >= -1 && heading <= 1){
+                    return;
+                }
             }
         }
+
+
+
+
     }
 
-    //public void
+    /*public void flipTurn(double heading) {
+        if
+    }*/
 
 }
