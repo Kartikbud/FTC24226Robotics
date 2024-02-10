@@ -102,6 +102,12 @@ public class MainAuto extends LinearOpMode {
                 } else {
                     drive.followTrajectorySequence(leftBlueFrontSeq);
                 }
+            } else if (allianceColour == "Blue" && teamPosition == "Back") {
+
+            } else if (allianceColour == "Red" && teamPosition == "Front") {
+
+            } else if (allianceColour == "Red" && teamPosition == "Back") {
+
             }
         }
     }

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.qualcomm.hardware.bosch.BHI260IMU;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -9,7 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -24,8 +21,8 @@ public class MainTeleOp extends LinearOpMode {
     DcMotor leftLift, rightLift;
     Servo leftArm, rightArm;
     Servo leftClaw, rightClaw;
+    Servo drone;
     IMU imu;
-    IMU.Parameters myIMUparameters;
     Orientation myRobotOrientation;
     double axial_drive;
     double lateral_drive;
@@ -51,9 +48,10 @@ public class MainTeleOp extends LinearOpMode {
     double slideCountPerInch = slideCountPerRev / (diameterSlide + Math.PI);
     double slideMaxDistance = 20.3418124319;
     double slideMinDistance = 0;
-
-    double clawClosed = 1;
-    double clawOpen = 0.85;
+    double clawClosedPos = 1;
+    double clawOpenPos = 0.85;
+    double droneLockPos = 0;
+    double droneUnlockPos = 1;
 
 
 
@@ -106,6 +104,9 @@ public class MainTeleOp extends LinearOpMode {
         rightClaw.setDirection(Servo.Direction.FORWARD);
         leftClaw.setDirection(Servo.Direction.REVERSE);
 
+        //drone initialization
+        drone = hardwareMap.get(Servo.class, "drone");
+        drone.setDirection(Servo.Direction.FORWARD);
 
         //imu initialization
         imu = hardwareMap.get(IMU.class, "imu");
@@ -174,19 +175,25 @@ public class MainTeleOp extends LinearOpMode {
                 armUp();
             }
 
-            if (gamepad2.right_bumper) {
-                rightClaw(clawOpen);
+            if (gamepad1.y) {
+                droneUnlock();
             } else {
-                rightClaw(clawClosed);
+                droneLock();
+            }
+
+            if (gamepad2.right_bumper) {
+                rightClaw(clawOpenPos);
+            } else {
+                rightClaw(clawClosedPos);
             }
 
             if (gamepad2.left_bumper) {
-                leftClaw(clawOpen);
+                leftClaw(clawOpenPos);
             } else {
-                leftClaw(clawClosed);
+                leftClaw(clawClosedPos);
             }
 
-            mecanum_drive_field(axial_drive,lateral_drive,yaw_drive,heading_drive);k
+            mecanum_drive_field(axial_drive,lateral_drive,yaw_drive,heading_drive);
             //lift(input_lift);
 
             telemetry.addData("right", rightArm.getPosition());
@@ -267,6 +274,14 @@ public class MainTeleOp extends LinearOpMode {
     public void armVarPos(double position) {
         leftArm.setPosition(position);
         rightArm.setPosition(position);
+    }
+
+    public void droneLock() {
+        drone.setPosition(droneLockPos);
+    }
+
+    public void droneUnlock() {
+        drone.setPosition(droneUnlockPos);
     }
 
     public void lift(double power) {
