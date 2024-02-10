@@ -93,7 +93,11 @@ public class MainAuto extends LinearOpMode {
         waitForStart();
 
         if (!isStopRequested()){
+            telemetry.addData("hh", "123");
+            telemetry.update();
             if (allianceColour == "Blue" && teamPosition == "Front") {
+                telemetry.addData("df", "321");
+                telemetry.update();
                 drive.followTrajectorySequence(initBlueFrontSeq);
                 if (side.equals("Right")) {
                     drive.followTrajectorySequence(rightBlueFrontSeq);

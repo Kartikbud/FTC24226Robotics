@@ -46,7 +46,7 @@ public class MainTeleOp extends LinearOpMode {
     double diameterSlide = 1.4;
     double liftCountPerInch = liftCountPerRev / (diameterLift * Math.PI);
     double slideCountPerInch = slideCountPerRev / (diameterSlide + Math.PI);
-    double slideMaxDistance = 20.3418124319;
+    double slideMaxDistance = 21.5;//20.3418124319;
     double slideMinDistance = 0;
     double clawClosedPos = 1;
     double clawOpenPos = 0.85;
@@ -156,12 +156,19 @@ public class MainTeleOp extends LinearOpMode {
                 yaw_drive = -FINE_DRIVE_POWER_SCALE;
             }
 
+            if (gamepad1.a) {
+                driveCorrection(myRobotOrientation.firstAngle);
+            }
 
             if (gamepad2.b) {
                 slide(slideMaxDistance);
             }
 
             if (gamepad2.left_stick_button) {
+                slide(slideMinDistance);
+            }
+
+            if (gamepad1.left_stick_button) {
                 slide(slideMinDistance);
             }
 
@@ -194,7 +201,7 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             mecanum_drive_field(axial_drive,lateral_drive,yaw_drive,heading_drive);
-            //lift(input_lift);
+            lift(input_lift);
 
             telemetry.addData("right", rightArm.getPosition());
             telemetry.addData("left", leftArm.getPosition());
@@ -316,5 +323,17 @@ public class MainTeleOp extends LinearOpMode {
     public void leftClaw (double position) {
         leftClaw.setPosition(position);
     }
+
+    public void driveCorrection(double heading) {
+        if ((-45 <= heading) && (heading <= 45)) {
+            if (-45 <= heading) {
+                yaw_drive = 0.3;
+            } else if (heading <= 45) {
+                yaw_drive = -0.3;
+            }
+        }
+    }
+
+    //public void
 
 }
