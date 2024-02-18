@@ -16,6 +16,8 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 public class Subsystem {
 
     DcMotor leftSlide, rightSlide;
+
+    DcMotor leftLift, rightLift;
     Servo leftArm, rightArm;
 
     Servo leftClaw, rightClaw;
@@ -26,6 +28,13 @@ public class Subsystem {
 
     double clawClosed = 1;
     double clawOpen = 0.85;
+
+    double liftCountPerRev = 1440;
+    double slideCountPerRev = 383.6;
+    double diameterLift = 0.88;
+    double diameterSlide = 1.4;
+    double liftCountPerInch = liftCountPerRev / (diameterLift * Math.PI);
+    double slideCountPerInch = slideCountPerRev / (diameterSlide + Math.PI);
 
 
     public Subsystem (HardwareMap hardwareMap) {
@@ -49,6 +58,11 @@ public class Subsystem {
         rightClaw = hardwareMap.get(Servo.class, "rightClaw");
         rightClaw.setDirection(Servo.Direction.FORWARD);
         leftClaw.setDirection(Servo.Direction.REVERSE);
+
+        leftLift = hardwareMap.get(DcMotor.class, "leftLift");
+        rightLift = hardwareMap.get(DcMotor.class, "rightLift");
+        leftLift.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightLift.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void armUp() {
@@ -86,13 +100,28 @@ public class Subsystem {
     }
 
     public void slidePositionTo(int position) {
+
+        double liftDistance;
+
+        if ((position) > leftSlide.getCurrentPosition()) {
+            liftDistance = (position/slideCountPerInch) - 4;
+        } else {
+            liftDistance = (position/slideCountPerInch);
+        }
+
         position = constrain((int) position, (int) slideDownPos, (int) slideUpPos);
         leftSlide.setTargetPosition(position);
         rightSlide.setTargetPosition(position);
+        /*leftLift.setTargetPosition((int) (liftCountPerInch * liftDistance));
+        rightLift.setTargetPosition((int) (liftCountPerInch * liftDistance));*/
         leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftSlide.setPower(0.3);
-        rightSlide.setPower(0.3);
+        /*rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftLift.setMode((DcMotor.RunMode.RUN_TO_POSITION));*/
+        leftSlide.setPower(0.4);
+        rightSlide.setPower(0.4);
+        /*leftLift.setPower(0.625);
+        rightLift.setPower(0.625);*/
 
     }
 

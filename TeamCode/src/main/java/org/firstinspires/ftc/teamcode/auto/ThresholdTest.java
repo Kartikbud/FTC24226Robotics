@@ -30,7 +30,7 @@ public class ThresholdTest extends LinearOpMode{
 
         HardwareStart();
 
-        String curAlliance = "red";
+        String curAlliance = "blue";
 
         while (!opModeIsActive() && !isStopRequested()){
             element_zone = cameraDetection.elementDetection(telemetry);

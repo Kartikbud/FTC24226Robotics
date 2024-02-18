@@ -25,22 +25,20 @@ public class MainTeleOp extends LinearOpMode {
     IMU imu;
     Orientation myRobotOrientation;
     double initYaw;
-    double adjustedYaw;
     double axial_drive;
     double lateral_drive;
     double yaw_drive;
-    double heading_drive;
     double input_lift;
     double liftDistance;
 
 
     //constants
-    double DRIVE_POWER_SCALE = 0.9;
+    double DRIVE_POWER_SCALE = 0.8;
     double SLIDE_POWER_SCALE = 0.62;
     double LIFT_POWER_SCALE = 1;
     double FINE_DRIVE_POWER_SCALE = DRIVE_POWER_SCALE/3;
     int liftDownPos = 0;
-    double armUpPos = 0.75;
+    double armUpPos = 0.65;
     double armDownPos = 0.02;
     double liftCountPerRev = 1440;
     double slideCountPerRev = 383.6;
@@ -52,8 +50,8 @@ public class MainTeleOp extends LinearOpMode {
     double slideMinDistance = 0;
     double clawClosedPos = 1;
     double clawOpenPos = 0.85;
-    double droneLockPos = 1;
-    double droneUnlockPos = 0;
+    double droneLockPos = 0.23;
+    double droneUnlockPos = 1;
     boolean slideLiftSyncOn = true;
 
 
@@ -83,6 +81,7 @@ public class MainTeleOp extends LinearOpMode {
         rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //lift initialization
+        /*
         leftLift = hardwareMap.get(DcMotor.class, "leftLift");
         rightLift = hardwareMap.get(DcMotor.class, "rightLift");
         leftLift.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -93,6 +92,7 @@ public class MainTeleOp extends LinearOpMode {
         rightLift.setTargetPosition(liftDownPos);
         leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        */
 
         //arm initialization
         leftArm = hardwareMap.get(Servo.class, "leftArm");
@@ -108,7 +108,7 @@ public class MainTeleOp extends LinearOpMode {
 
         //drone initialization
         drone = hardwareMap.get(Servo.class, "drone");
-        drone.setDirection(Servo.Direction.FORWARD);
+        drone.setDirection(Servo.Direction.REVERSE);
 
         //imu initialization
         imu = hardwareMap.get(IMU.class, "imu");
@@ -116,6 +116,7 @@ public class MainTeleOp extends LinearOpMode {
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
+        imu.resetYaw();
         myRobotOrientation = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         initYaw = myRobotOrientation.firstAngle;
 
@@ -130,8 +131,14 @@ public class MainTeleOp extends LinearOpMode {
             myRobotOrientation = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
             lateral_drive = gamepad1.left_stick_x;
-            axial_drive = -gamepad1.left_stick_y;
             yaw_drive = gamepad1.right_stick_x;
+            if (gamepad1.right_trigger > 0 ) {
+                axial_drive = gamepad1.right_trigger;
+            } else if (gamepad1.left_trigger > 0) {
+                axial_drive = -gamepad1.left_trigger;
+            } else {
+                axial_drive = -gamepad1.left_stick_y;
+            }
 
             input_lift = gamepad2.left_stick_y;
 
@@ -163,10 +170,6 @@ public class MainTeleOp extends LinearOpMode {
                 driveCorrection(myRobotOrientation.firstAngle);
             }
 
-            if (gamepad1.b) {
-
-            }
-
             if (gamepad2.dpad_right) {
                 slideLiftSyncOn = false;
             } else if (gamepad2.dpad_left) {
@@ -190,7 +193,7 @@ public class MainTeleOp extends LinearOpMode {
                     slideLift(slideMaxDistance/2);
                 }
             } else {
-                lift(input_lift);
+                //lift(input_lift);
 
                 if (gamepad2.b) {
                     slide(slideMaxDistance);
@@ -233,8 +236,8 @@ public class MainTeleOp extends LinearOpMode {
                 leftClaw(clawClosedPos);
             }
 
-            mecanum_drive_field(axial_drive,lateral_drive,yaw_drive,myRobotOrientation.firstAngle);
-            //mecanum_drive_robot(axial_drive,lateral_drive,yaw_drive);
+            //mecanum_drive_robot(axial_drive,lateral_drive,yaw_drive,myRobotOrientation.firstAngle);
+            mecanum_drive_robot(axial_drive,lateral_drive,yaw_drive);
 
 
             telemetry.addData("right", rightArm.getPosition());
@@ -286,23 +289,23 @@ public class MainTeleOp extends LinearOpMode {
 
     public void slideLift(double distance) {
         if ((slideCountPerInch * distance) > leftSlide.getCurrentPosition()) {
-            liftDistance = distance - 5;
+            liftDistance = distance - 4;
         } else {
             liftDistance = distance;
         }
 
         leftSlide.setTargetPosition((int) (slideCountPerInch * distance));
         rightSlide.setTargetPosition((int) (slideCountPerInch * distance));
-        leftLift.setTargetPosition((int) (liftCountPerInch * liftDistance));
-        rightLift.setTargetPosition((int) (liftCountPerInch * liftDistance));
+        //leftLift.setTargetPosition((int) (liftCountPerInch * liftDistance));
+        //rightLift.setTargetPosition((int) (liftCountPerInch * liftDistance));
         leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftLift.setMode((DcMotor.RunMode.RUN_TO_POSITION));
-        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //leftLift.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+        //rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftSlide.setPower(SLIDE_POWER_SCALE);
         rightSlide.setPower(SLIDE_POWER_SCALE);
-        leftLift.setPower(SLIDE_POWER_SCALE/0.64);
-        rightLift.setPower(SLIDE_POWER_SCALE/0.64);
+        //leftLift.setPower(SLIDE_POWER_SCALE/0.64);
+        //rightLift.setPower(SLIDE_POWER_SCALE/0.64);
     }
 
     public void slide(double distance) {
@@ -340,6 +343,7 @@ public class MainTeleOp extends LinearOpMode {
         drone.setPosition(droneUnlockPos);
     }
 
+    /*
     public void lift(double power) {
         if (power > 0) {
             leftLift.setTargetPosition(leftLift.getCurrentPosition() + 200);
@@ -365,6 +369,8 @@ public class MainTeleOp extends LinearOpMode {
         }
     }
 
+     */
+
     public void rightClaw (double position) {
         rightClaw.setPosition(position);
     }
@@ -374,15 +380,42 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     public void driveCorrection(double heading) {
-        while (!(heading >= -1 && heading <= 1)) {
-            if ((-45 <= heading) && (heading <= 45)) {
-                if (-45 <= heading && heading < 0) {
-                    yaw_drive = 0.3;
-                } else if (heading <= 45) {
-                    yaw_drive = -0.3;
-                }
+        telemetry.addData("Heading: ", heading);
+        telemetry.update();
+        if (-45 <= heading && heading <= 45) {
+            if (heading < 0) {
+                yaw_drive = -0.5;
+            } else if (heading > 0) {
+                yaw_drive = 0.5;
+            } else {
+                yaw_drive = 0;
+            }
+        } else if (-135 <= heading && heading < -45) {
+            if (heading < -90) {
+                yaw_drive = -0.5;
+            } else if (heading > -90) {
+                yaw_drive = 0.5;
+            } else {
+                yaw_drive = 0;
+            }
+        } else if (45 < heading && heading <= 135) {
+            if (heading < 90) {
+                yaw_drive = -0.5;
+            } else if (heading > 90) {
+                yaw_drive = 0.5;
+            } else {
+                yaw_drive = 0;
+            }
+        } else if (heading > 135 || heading < -135){
+            if (heading < 180) {
+                yaw_drive = -0.5;
+            } else if (heading > -180) {
+                yaw_drive = 0.5;
+            } else {
+                yaw_drive = 0;
             }
         }
+
 
 
 

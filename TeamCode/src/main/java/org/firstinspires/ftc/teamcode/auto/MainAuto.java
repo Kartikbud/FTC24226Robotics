@@ -13,6 +13,7 @@ public class MainAuto extends LinearOpMode {
 
     String allianceColour = " ";
     String teamPosition = " ";
+    int waitBuffer = 0;
     boolean isConfiguring = true;
 
     String side = "Center";
@@ -22,14 +23,10 @@ public class MainAuto extends LinearOpMode {
     Pose2d redFrontPose = new Pose2d(12, -60, Math.toRadians(90));
     Pose2d redBackPose = new Pose2d(-36, -60, Math.toRadians(90));
 
-    TrajectorySequence initBlueFrontSeq;
-    TrajectorySequence rightBlueFrontSeq;
-    TrajectorySequence centreBlueFrontSeq;
-    TrajectorySequence leftBlueFrontSeq;
-    TrajectorySequence initRedFrontSeq;
-    TrajectorySequence rightRedFrontSeq;
-    TrajectorySequence centreRedFrontSeq;
-    TrajectorySequence leftRedFrontSeq;
+    TrajectorySequence initBlueFrontSeq, rightBlueFrontSeq, centreBlueFrontSeq, leftBlueFrontSeq;
+    TrajectorySequence initRedFrontSeq, rightRedFrontSeq, centreRedFrontSeq, leftRedFrontSeq;
+    TrajectorySequence initRedBackSeq, rightRedBackSeq, centreRedBackSeq, leftRedBackSeq;
+    TrajectorySequence initBlueBackSeq, rightBlueBackSeq, centreBlueBackSeq, leftBlueBackSeq;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -53,21 +50,34 @@ public class MainAuto extends LinearOpMode {
             if (gamepad1.left_stick_button) {
                 isConfiguring = false;
             }
+            if (gamepad1.dpad_up) {
+                waitBuffer += 1;
+            }
+            if (gamepad1.dpad_down) {
+                if (waitBuffer > 0) {
+                    waitBuffer -= 1;
+                }
+            }
             telemetry.addLine( "ALLIANCE COLOUR:");
             telemetry.addLine("Red (Press B)");
             telemetry.addLine("Blue (Press X)");
             telemetry.addLine( "TEAM POSITION:");
             telemetry.addLine("Front (Press Y)");
             telemetry.addLine("Back (Press A)");
+            telemetry.addLine( "WAIT BUFFER:");
+            telemetry.addLine("Increase (Press Dpad Up)");
+            telemetry.addLine("Decrease (Press Dpad Down)");
             telemetry.addLine("PRESS LEFT STICK TO CONFIRM");
             telemetry.addLine("Selected Alliance Colour: " + allianceColour);
             telemetry.addLine("Selected Team Position: " + teamPosition);
+            telemetry.addLine("Selected Wait Buffer: " + waitBuffer);
             telemetry.update();
         }
 
         telemetry.addLine("Initialized");
         telemetry.addLine("Alliance Colour: " + allianceColour);
         telemetry.addLine("Team Position: " + teamPosition);
+        telemetry.addLine("Wait Buffer: " + waitBuffer);
         telemetry.update();
 
         if (allianceColour == "Red") {
@@ -95,11 +105,7 @@ public class MainAuto extends LinearOpMode {
         waitForStart();
 
         if (!isStopRequested()){
-            telemetry.addData("hh", "123");
-            telemetry.update();
             if (allianceColour == "Blue" && teamPosition == "Front") {
-                telemetry.addData("df", "321");
-                telemetry.update();
                 drive.followTrajectorySequence(initBlueFrontSeq);
                 if (side.equals("Right")) {
                     drive.followTrajectorySequence(rightBlueFrontSeq);
@@ -108,12 +114,36 @@ public class MainAuto extends LinearOpMode {
                 } else {
                     drive.followTrajectorySequence(leftBlueFrontSeq);
                 }
+
             } else if (allianceColour == "Blue" && teamPosition == "Back") {
+                drive.followTrajectorySequence(initBlueBackSeq);
+                if (side.equals("Right")) {
+                    drive.followTrajectorySequence(rightBlueBackSeq);
+                } else if (side.equals("Center")) {
+                    drive.followTrajectorySequence(centreBlueBackSeq);
+                } else {
+                    drive.followTrajectorySequence(leftBlueBackSeq);
+                }
 
             } else if (allianceColour == "Red" && teamPosition == "Front") {
+                drive.followTrajectorySequence(initRedFrontSeq);
+                if (side.equals("Right")) {
+                    drive.followTrajectorySequence(rightRedFrontSeq);
+                } else if (side.equals("Center")) {
+                    drive.followTrajectorySequence(centreRedFrontSeq);
+                } else {
+                    drive.followTrajectorySequence(leftRedFrontSeq);
+                }
 
             } else if (allianceColour == "Red" && teamPosition == "Back") {
-
+                drive.followTrajectorySequence(initRedBackSeq);
+                if (side.equals("Right")) {
+                    drive.followTrajectorySequence(rightRedBackSeq);
+                } else if (side.equals("Center")) {
+                    drive.followTrajectorySequence(centreRedBackSeq);
+                } else {
+                    drive.followTrajectorySequence(leftRedBackSeq);
+                }
             }
         }
     }
@@ -132,11 +162,54 @@ public class MainAuto extends LinearOpMode {
                     subsystem.armUp();
                     //left claw close
                 })
+                .waitSeconds(0.5)
                 .forward(14)
                 .build();
 
         rightRedFrontSeq = drive.trajectorySequenceBuilder(initRedFrontSeq.end())
-                .lineToSplineHeading(new Pose2d(21,-34, Math.toRadians(90))) //spline to according side
+                .lineToSplineHeading(new Pose2d(22,-48, Math.toRadians(90))) //spline to according side
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(3)
+                .waitSeconds(1.5)
+                .forward(12)
+                .addTemporalMarker( () -> {
+                    subsystem.rightClawOpen();
+                })
+                .waitSeconds(1.5)
+                .back(10)
+                .waitSeconds(2)
+                .addTemporalMarker( () -> {
+                    subsystem.armUp();
+                })
+                .lineToSplineHeading(new Pose2d(51,-43, Math.toRadians(0)))
+                .addTemporalMarker( () -> {
+                    subsystem.slidePositionTo(400);
+                })
+                .waitSeconds(3)
+                .addTemporalMarker( () -> {
+                    subsystem.leftClawOpen();
+                })
+                .waitSeconds(1)
+                .back(3)
+                .addTemporalMarker( () -> {
+                    subsystem.slideDown();
+                })
+                .waitSeconds(2)
+                .strafeRight(16)
+                .turn(Math.toRadians(90))
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(2)
+                .build();
+
+        //NOT DONE
+        leftRedFrontSeq = drive.trajectorySequenceBuilder(initRedFrontSeq.end())
+                .forward(3)
+                .lineToSplineHeading(new Pose2d(10,-34, Math.toRadians(180)))
+                //.strafeRight(8)
                 .addTemporalMarker( () -> {
                     subsystem.armDown();
                 })
@@ -152,32 +225,248 @@ public class MainAuto extends LinearOpMode {
                 .addTemporalMarker( () -> {
                     subsystem.armUp();
                 })
-                .lineToSplineHeading(new Pose2d(43,-44, Math.toRadians(0)))
+                //.strafeRight(20)
+                .lineToSplineHeading(new Pose2d(49,-29, Math.toRadians(0))) //adjust depending on location
                 .addTemporalMarker( () -> {
-                    subsystem.slidePositionTo(1000);
+                    subsystem.slidePositionTo(400);
                 })
-                .waitSeconds(5)
+                .waitSeconds(3)
                 .addTemporalMarker( () -> {
                     subsystem.leftClawOpen();
                 })
                 .waitSeconds(1)
+                .back(4)
                 .addTemporalMarker( () -> {
                     subsystem.slideDown();
                 })
                 .waitSeconds(2)
-                .strafeLeft(18)
+                .strafeRight(6)
                 .turn(Math.toRadians(90))
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(2)
                 .build();
 
-        leftRedFrontSeq = drive.trajectorySequenceBuilder(initRedFrontSeq.end())
-                .lineToSplineHeading(new Pose2d(10,-35, Math.toRadians(180)))
-
+        centreRedFrontSeq = drive.trajectorySequenceBuilder(initRedFrontSeq.end())
+                .lineToSplineHeading(new Pose2d(35,-24, Math.toRadians(180)))
+                //.strafeRight(8)
                 .addTemporalMarker( () -> {
                     subsystem.armDown();
                 })
                 .back(3)
                 .waitSeconds(1.5)
-                .forward(12)
+                .forward(14)
+                .addTemporalMarker( () -> {
+                    subsystem.rightClawOpen();
+                })
+                .waitSeconds(1.5)
+                .back(10)
+                .waitSeconds(2)
+                .addTemporalMarker( () -> {
+                    subsystem.armUp();
+                    subsystem.rightClawClosed();
+                })
+                //.strafeRight(20)
+                .lineToSplineHeading(new Pose2d(50,-37, Math.toRadians(0))) //adjust depending on location
+                .addTemporalMarker( () -> {
+                    subsystem.slidePositionTo(400);
+                })
+                .waitSeconds(3)
+                .addTemporalMarker( () -> {
+                    subsystem.leftClawOpen();
+                })
+                .waitSeconds(1)
+                .back(4)
+                .addTemporalMarker( () -> {
+                    subsystem.slideDown();
+                    subsystem.rightClawClosed();
+                })
+                .waitSeconds(2)
+                .strafeRight(10)
+                .turn(Math.toRadians(90))
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(2)
+                .build();
+
+    }
+
+    public void redBack(SampleMecanumDrive drive, Subsystem subsystem) {
+        drive.setPoseEstimate(redBackPose);
+
+        initRedBackSeq = drive.trajectorySequenceBuilder(redBackPose)
+                .addTemporalMarker( () -> {
+                    subsystem.rightClawClosed();
+                    subsystem.leftClawClosed();
+                    //left claw close
+                })
+                .waitSeconds(1)
+                .addTemporalMarker( () -> {
+                    subsystem.armUp();
+                    //left claw close
+                })
+                .waitSeconds(0.5)
+                .forward(14)
+                .build();
+
+        rightRedBackSeq = drive.trajectorySequenceBuilder(redBackPose)
+                .lineToSplineHeading(new Pose2d(-34,-34, Math.toRadians(0)))
+                //.strafeRight(8)
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(3)
+                .waitSeconds(1.5)
+                .forward(4)
+                .addTemporalMarker( () -> {
+                    subsystem.leftClawOpen();
+                })
+                .waitSeconds(1.5)
+                .back(10)
+                .waitSeconds(2)
+                .addTemporalMarker( () -> {
+                    subsystem.armUp();
+                })
+                .strafeLeft(25)
+                .forward(80)
+                .lineToSplineHeading(new Pose2d(51,-43, Math.toRadians(0)))
+                .addTemporalMarker( () -> {
+                    subsystem.slidePositionTo(400);
+                })
+                .waitSeconds(3)
+                .addTemporalMarker( () -> {
+                    subsystem.leftClawOpen();
+                })
+                .waitSeconds(1)
+                .back(3)
+                .addTemporalMarker( () -> {
+                    subsystem.slideDown();
+                })
+                .waitSeconds(2)
+                .strafeRight(16)
+                .turn(Math.toRadians(90))
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(2)
+                .build();
+
+        centreRedBackSeq = drive.trajectorySequenceBuilder(redBackPose)
+                .lineToSplineHeading(new Pose2d(-59,-21, Math.toRadians(0)))
+                //.strafeRight(8)
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(3)
+                .waitSeconds(1.5)
+                .forward(14)
+                .addTemporalMarker( () -> {
+                    subsystem.leftClawOpen();
+                })
+                .waitSeconds(1.5)
+                .back(10)
+                .waitSeconds(2)
+                .addTemporalMarker( () -> {
+                    subsystem.armUp();
+                    subsystem.leftClawClosed();
+                })
+                .strafeLeft(10)
+                .forward(90)
+                .lineToSplineHeading(new Pose2d(50,-37, Math.toRadians(0))) //adjust depending on location
+                .addTemporalMarker( () -> {
+                    subsystem.slidePositionTo(400);
+                })
+                .waitSeconds(3)
+                .addTemporalMarker( () -> {
+                    subsystem.rightClawOpen();
+                })
+                .waitSeconds(1)
+                .back(4)
+                .addTemporalMarker( () -> {
+                    subsystem.slideDown();
+                    subsystem.rightClawClosed();
+                })
+                .waitSeconds(2)
+                .strafeRight(10)
+                .turn(Math.toRadians(90))
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(2)
+                .build();
+
+       leftRedBackSeq = drive.trajectorySequenceBuilder(redBackPose)
+               .lineToSplineHeading(new Pose2d(-48,-48, Math.toRadians(90))) //spline to according side
+               .addTemporalMarker( () -> {
+                   subsystem.armDown();
+               })
+               .back(3)
+               .waitSeconds(1.5)
+               .forward(12)
+               .addTemporalMarker( () -> {
+                   subsystem.leftClawOpen();
+               })
+               .waitSeconds(1.5)
+               .back(10)
+               .waitSeconds(2)
+               .addTemporalMarker( () -> {
+                   subsystem.armUp();
+               })
+               .forward(40)
+               .strafeRight(80)
+               .lineToSplineHeading(new Pose2d(49,-29, Math.toRadians(0))) //adjust depending on location
+               .addTemporalMarker( () -> {
+                   subsystem.slidePositionTo(400);
+               })
+               .waitSeconds(3)
+               .addTemporalMarker( () -> {
+                   subsystem.leftClawOpen();
+               })
+               .waitSeconds(1)
+               .back(4)
+               .addTemporalMarker( () -> {
+                   subsystem.slideDown();
+               })
+               .waitSeconds(2)
+               .strafeRight(6)
+               .turn(Math.toRadians(90))
+               .addTemporalMarker( () -> {
+                   subsystem.armDown();
+               })
+               .back(2)
+               .build();
+    }
+
+
+    public void blueFront(SampleMecanumDrive drive, Subsystem subsystem) {
+        drive.setPoseEstimate(blueFrontPose);
+
+        initBlueFrontSeq = drive.trajectorySequenceBuilder(blueFrontPose)
+                .addTemporalMarker( () -> {
+                    subsystem.rightClawClosed();
+                    subsystem.leftClawClosed();
+                })
+                .waitSeconds(1)
+                .addTemporalMarker( () -> {
+                    subsystem.armUp();
+                    //left claw close
+                })
+                .waitSeconds(0.5)
+                .forward(14)
+                .build();
+
+        rightBlueFrontSeq = drive.trajectorySequenceBuilder(initBlueFrontSeq.end())
+                .forward(3)
+                .lineToSplineHeading(new Pose2d(10,34, Math.toRadians(180)))
+                //.strafeRight(8)
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(3)
+                .waitSeconds(1.5)
+                .forward(4)
                 .addTemporalMarker( () -> {
                     subsystem.leftClawOpen();
                 })
@@ -188,116 +477,74 @@ public class MainAuto extends LinearOpMode {
                     subsystem.armUp();
                 })
                 //.strafeRight(20)
-                .lineToSplineHeading(new Pose2d(43,-28, Math.toRadians(0))) //adjust depending on location
+                .lineToSplineHeading(new Pose2d(49,28, Math.toRadians(0))) //adjust depending on location
                 .addTemporalMarker( () -> {
-                    subsystem.slidePositionTo(1000);
+                    subsystem.slidePositionTo(400);
                 })
-                .waitSeconds(5)
-                .addTemporalMarker( () -> {
-                    subsystem.rightClawOpen();
-                })
-                .waitSeconds(1)
-                .addTemporalMarker( () -> {
-                    subsystem.slideDown();
-                })
-                .waitSeconds(2)
-                .strafeRight(28)
-                .turn(Math.toRadians(90))
-                .build();
-
-        centreRedFrontSeq = drive.trajectorySequenceBuilder(initRedFrontSeq.end())
-                .lineToSplineHeading(new Pose2d(35,-25, Math.toRadians(180)))
-                .addTemporalMarker( () -> {
-                    subsystem.armDown();
-                })
-                .back(3)
-                .waitSeconds(1.5)
-                .forward(12)
-                .addTemporalMarker( () -> {
-                    subsystem.rightClawOpen();
-                })
-                .waitSeconds(1.5)
-                .back(10)
-                .waitSeconds(2)
-                .addTemporalMarker( () -> {
-                    subsystem.armUp();
-                })
-                .lineToSplineHeading(new Pose2d(43,-38, Math.toRadians(0))) //adjust depending on location
-                .addTemporalMarker( () -> {
-                    subsystem.slidePositionTo(1000);
-                })
-                .waitSeconds(5)
-                .addTemporalMarker( () -> {
-                    subsystem.leftClawOpen();
-                })
-                .waitSeconds(1)
-                .addTemporalMarker( () -> {
-                    subsystem.slideDown();
-                })
-                .waitSeconds(2)
-                .strafeLeft(18)
-                .turn(Math.toRadians(90))
-                .build();
-
-
-
-
-    }
-
-    public void redBack(SampleMecanumDrive drive, Subsystem subsystem) {
-        drive.setPoseEstimate(redBackPose);
-    }
-
-    public void blueFront(SampleMecanumDrive drive, Subsystem subsystem) {
-        drive.setPoseEstimate(blueFrontPose);
-
-        initBlueFrontSeq = drive.trajectorySequenceBuilder(blueFrontPose)
-                .addTemporalMarker( () -> {
-                    subsystem.rightClawClosed();
-                    subsystem.leftClawClosed();
-                    subsystem.slideDown();
-                    subsystem.armUp();
-                })
-                .forward(14)
-                .build();
-
-        rightBlueFrontSeq = drive.trajectorySequenceBuilder(initBlueFrontSeq.end())
-                .lineToSplineHeading(new Pose2d(10,35, Math.toRadians(180)))
-                .addTemporalMarker( () -> {
-                    subsystem.armDown();
-                })
-                .back(3)
-                .waitSeconds(1.5)
-                .forward(12)
-                .addTemporalMarker( () -> {
-                    subsystem.leftClawOpen();
-                })
-                .waitSeconds(1.5)
-                .back(10)
-                .waitSeconds(2)
-                .addTemporalMarker( () -> {
-                    subsystem.armUp();
-                })
-                .lineToSplineHeading(new Pose2d(43,28, Math.toRadians(0))) //adjust depending on location
-                .addTemporalMarker( () -> {
-                    subsystem.slidePositionTo(1000);
-                })
-                .waitSeconds(5)
+                .waitSeconds(3)
                 .addTemporalMarker( () -> {
                     subsystem.rightClawOpen();
                 })
                 .waitSeconds(1)
+                .back(4)
                 .addTemporalMarker( () -> {
                     subsystem.slideDown();
                 })
                 .waitSeconds(2)
                 .strafeLeft(28)
                 .turn(Math.toRadians(-90))
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(2)
                 .build();
 
 
         centreBlueFrontSeq = drive.trajectorySequenceBuilder(initBlueFrontSeq.end())
                 .lineToSplineHeading(new Pose2d(35,21, Math.toRadians(180)))
+                //.strafeRight(8)
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(3)
+                .waitSeconds(1.5)
+                .forward(14)
+                .addTemporalMarker( () -> {
+                    subsystem.leftClawOpen();
+                })
+                .waitSeconds(1.5)
+                .back(10)
+                .waitSeconds(2)
+                .addTemporalMarker( () -> {
+                    subsystem.armUp();
+                    subsystem.leftClawClosed();
+                })
+                //.strafeRight(20)
+                .lineToSplineHeading(new Pose2d(50,34, Math.toRadians(0))) //adjust depending on location
+                .addTemporalMarker( () -> {
+                    subsystem.slidePositionTo(400);
+                })
+                .waitSeconds(3)
+                .addTemporalMarker( () -> {
+                    subsystem.rightClawOpen();
+                })
+                .waitSeconds(1)
+                .back(3)
+                .addTemporalMarker( () -> {
+                    subsystem.slideDown();
+                    subsystem.rightClawClosed();
+                })
+                .waitSeconds(2)
+                .strafeLeft(18)
+                .turn(Math.toRadians(-90))
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(2)
+                .build();
+
+        leftBlueFrontSeq = drive.trajectorySequenceBuilder(initBlueFrontSeq.end())
+                .lineToSplineHeading(new Pose2d(22,48, Math.toRadians(-90))) //spline to according side
                 .addTemporalMarker( () -> {
                     subsystem.armDown();
                 })
@@ -313,60 +560,33 @@ public class MainAuto extends LinearOpMode {
                 .addTemporalMarker( () -> {
                     subsystem.armUp();
                 })
-                .lineToSplineHeading(new Pose2d(46,38, Math.toRadians(0))) //adjust depending on location
+                .lineToSplineHeading(new Pose2d(50,38, Math.toRadians(0)))
                 .addTemporalMarker( () -> {
-                    subsystem.slidePositionTo(1000);
+                    subsystem.slidePositionTo(400);
                 })
-                .waitSeconds(5)
+                .waitSeconds(3)
                 .addTemporalMarker( () -> {
                     subsystem.rightClawOpen();
                 })
                 .waitSeconds(1)
+                .back(3)
                 .addTemporalMarker( () -> {
                     subsystem.slideDown();
                 })
                 .waitSeconds(2)
-                .strafeLeft(18)
+                .strafeLeft(16)
                 .turn(Math.toRadians(-90))
-                .build();
-
-        leftBlueFrontSeq = drive.trajectorySequenceBuilder(initBlueFrontSeq.end())
-                .lineToSplineHeading(new Pose2d(21,34, Math.toRadians(-90))) //spline to according side
                 .addTemporalMarker( () -> {
                     subsystem.armDown();
                 })
-                .back(3)
-                .waitSeconds(1.5)
-                .forward(4)
-                .addTemporalMarker( () -> {
-                    subsystem.leftClawOpen();
-                })
-                .waitSeconds(1.5)
-                .back(10)
-                .waitSeconds(2)
-                .addTemporalMarker( () -> {
-                    subsystem.armUp();
-                })
-                .lineToSplineHeading(new Pose2d(43,44, Math.toRadians(0)))
-                .addTemporalMarker( () -> {
-                    subsystem.slidePositionTo(1000);
-                })
-                .waitSeconds(5)
-                .addTemporalMarker( () -> {
-                    subsystem.rightClawOpen();
-                })
-                .waitSeconds(1)
-                .addTemporalMarker( () -> {
-                    subsystem.slideDown();
-                })
-                .waitSeconds(2)
-                .strafeLeft(18)
-                .turn(Math.toRadians(-90))
+                .back(2)
                 .build();
     }
 
     public void blueBack(SampleMecanumDrive drive, Subsystem subsystem) {
         drive.setPoseEstimate(blueBackPose);
+
+
     }
 }
 

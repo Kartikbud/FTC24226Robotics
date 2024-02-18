@@ -37,8 +37,8 @@ public class detectionPipeline extends OpenCvPipeline {
     public Mat processFrame(Mat input) {
         original = input.clone();
 
-        centerZone = input.submat(new Rect(230, 400, 180, 190));
-        rightZone = input.submat(new Rect(790, 505, 200, 240));
+        centerZone = input.submat(new Rect(250, 420, 180, 190));
+        rightZone = input.submat(new Rect(810, 425, 200, 240));
 
         avgColorCenter = Core.mean(centerZone);
         avgColorRight = Core.mean(rightZone);

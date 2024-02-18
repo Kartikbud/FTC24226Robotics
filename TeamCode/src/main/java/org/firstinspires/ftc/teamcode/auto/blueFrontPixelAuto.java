@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.auto;
 //import org.firstinspires.ftc.teamcode.auto.RobotFunctions;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -38,7 +39,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
 
         HardwareStart();
 
-        String curAlliance = "red";
+        String curAlliance = "blue";
 
         cameraDetection.setAlliance(curAlliance);
 
@@ -62,21 +63,22 @@ public class blueFrontPixelAuto extends LinearOpMode {
                     subsystem.armUp();
                     //left claw close
                 })
-                .waitSeconds(1)
+                .waitSeconds(0.5)
                 .forward(14)
                 .build();
 
 
 
         TrajectorySequence rightSeq = drive.trajectorySequenceBuilder(initSeq.end())
-                .lineToSplineHeading(new Pose2d(10,35, Math.toRadians(180)))
+                .forward(3)
+                .lineToSplineHeading(new Pose2d(10,34, Math.toRadians(180)))
                 //.strafeRight(8)
                 .addTemporalMarker( () -> {
                     subsystem.armDown();
                 })
                 .back(3)
                 .waitSeconds(1.5)
-                .forward(12)
+                .forward(4)
                 .addTemporalMarker( () -> {
                     subsystem.leftClawOpen();
                 })
@@ -87,23 +89,29 @@ public class blueFrontPixelAuto extends LinearOpMode {
                     subsystem.armUp();
                 })
                 //.strafeRight(20)
-                .lineToSplineHeading(new Pose2d(43,28, Math.toRadians(0))) //adjust depending on location
+                .lineToSplineHeading(new Pose2d(49,28, Math.toRadians(0))) //adjust depending on location
                 .addTemporalMarker( () -> {
-                    subsystem.slidePositionTo(1000);
+                    subsystem.slidePositionTo(400);
                 })
-                .waitSeconds(5)
+                .waitSeconds(3)
                 .addTemporalMarker( () -> {
                     subsystem.rightClawOpen();
                 })
                 .waitSeconds(1)
+                .back(4)
                 .addTemporalMarker( () -> {
                     subsystem.slideDown();
                 })
                 .waitSeconds(2)
                 .strafeLeft(28)
                 .turn(Math.toRadians(-90))
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(2)
                 .build();
 
+        //Pose2d startPose = new Pose2d(12, 60, Math.toRadians(270));
         TrajectorySequence centreSeq = drive.trajectorySequenceBuilder(initSeq.end())
                 .lineToSplineHeading(new Pose2d(35,21, Math.toRadians(180)))
                 //.strafeRight(8)
@@ -121,33 +129,40 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 .waitSeconds(2)
                 .addTemporalMarker( () -> {
                     subsystem.armUp();
+                    subsystem.leftClawClosed();
                 })
                 //.strafeRight(20)
-                .lineToSplineHeading(new Pose2d(46,32, Math.toRadians(0))) //adjust depending on location
+                .lineToSplineHeading(new Pose2d(50,34, Math.toRadians(0))) //adjust depending on location
                 .addTemporalMarker( () -> {
-                    subsystem.slidePositionTo(1000);
+                    subsystem.slidePositionTo(400);
                 })
-                .waitSeconds(5)
+                .waitSeconds(3)
                 .addTemporalMarker( () -> {
                     subsystem.rightClawOpen();
                 })
                 .waitSeconds(1)
+                .back(3)
                 .addTemporalMarker( () -> {
                     subsystem.slideDown();
+                    subsystem.rightClawClosed();
                 })
                 .waitSeconds(2)
                 .strafeLeft(18)
                 .turn(Math.toRadians(-90))
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(2)
                 .build();
 
         TrajectorySequence leftSeq = drive.trajectorySequenceBuilder(initSeq.end())
-                .lineToSplineHeading(new Pose2d(21,34, Math.toRadians(-90))) //spline to according side
+                .lineToSplineHeading(new Pose2d(22,48, Math.toRadians(-90))) //spline to according side
                 .addTemporalMarker( () -> {
                     subsystem.armDown();
                 })
                 .back(3)
                 .waitSeconds(1.5)
-                .forward(4)
+                .forward(12)
                 .addTemporalMarker( () -> {
                     subsystem.leftClawOpen();
                 })
@@ -157,22 +172,36 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 .addTemporalMarker( () -> {
                     subsystem.armUp();
                 })
-                .lineToSplineHeading(new Pose2d(43,44, Math.toRadians(0)))
+                .lineToSplineHeading(new Pose2d(50,38, Math.toRadians(0)))
                 .addTemporalMarker( () -> {
-                    subsystem.slidePositionTo(1000);
+                    subsystem.slidePositionTo(400);
                 })
-                .waitSeconds(5)
+                .waitSeconds(3)
                 .addTemporalMarker( () -> {
                     subsystem.rightClawOpen();
                 })
                 .waitSeconds(1)
+                .back(3)
                 .addTemporalMarker( () -> {
                     subsystem.slideDown();
                 })
                 .waitSeconds(2)
-                .strafeLeft(18)
+                .strafeLeft(16)
                 .turn(Math.toRadians(-90))
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                })
+                .back(2)
                 .build();
+
+        TrajectorySequence testSeq = drive.trajectorySequenceBuilder(initSeq.end())
+                .forward(1)
+                .addTemporalMarker( () -> {
+                    subsystem.slidePositionTo(400);
+                })
+                .waitSeconds(5)
+                .build();
+
 
         //telemetry.update();
 

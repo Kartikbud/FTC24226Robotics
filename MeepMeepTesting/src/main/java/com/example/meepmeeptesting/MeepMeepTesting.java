@@ -10,7 +10,8 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(700);
 
-        Pose2d startPose = new Pose2d(12, 60, Math.toRadians(270));
+        Pose2d startPose = //new Pose2d(12, 60, Math.toRadians(270));
+                new Pose2d(-36, -60, Math.toRadians(90));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -20,14 +21,19 @@ public class MeepMeepTesting {
                                 .addTemporalMarker( () -> {
                                     //subsystem.rightClawClosed();
                                     //subsystem.leftClawClosed();
+                                    //left claw close
                                 })
                                 .waitSeconds(1)
                                 .addTemporalMarker( () -> {
                                     //subsystem.armUp();
+                                    //left claw close
                                 })
+                                .waitSeconds(0.5)
                                 .forward(14)
-                                .lineToSplineHeading(new Pose2d(35,21, Math.toRadians(180)))
-                                //.strafeRight(8)
+
+                                // center
+
+                                .lineToSplineHeading(new Pose2d(-48,-48, Math.toRadians(90))) //spline to according side
                                 .addTemporalMarker( () -> {
                                     //subsystem.armDown();
                                 })
@@ -43,22 +49,14 @@ public class MeepMeepTesting {
                                 .addTemporalMarker( () -> {
                                     //subsystem.armUp();
                                 })
-                                //.strafeRight(20)
-                                .lineToSplineHeading(new Pose2d(46,38, Math.toRadians(0))) //adjust depending on location
-                                .addTemporalMarker( () -> {
-                                    //subsystem.slidePositionTo(1000);
-                                })
-                                .waitSeconds(5)
+                                .strafeLeft(12)
+                                .forward(40)
+                                .strafeRight(80)
+                                .turn(Math.toRadians(180))
+                                .strafeLeft(40)
                                 .addTemporalMarker( () -> {
                                     //subsystem.rightClawOpen();
                                 })
-                                .waitSeconds(1)
-                                .addTemporalMarker( () -> {
-                                    //subsystem.slideDown();
-                                })
-                                .waitSeconds(2)
-                                .strafeLeft(18)
-                                .turn(Math.toRadians(-90))
                                 .build()
 
 
