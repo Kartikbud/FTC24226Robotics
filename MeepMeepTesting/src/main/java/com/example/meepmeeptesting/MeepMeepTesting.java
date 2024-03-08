@@ -10,58 +10,109 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(700);
 
-        Pose2d startPose = //new Pose2d(12, 60, Math.toRadians(270));
-                new Pose2d(-36, -60, Math.toRadians(90));
+        /*
+        red front right
+        Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(startPose)
-                                .addTemporalMarker( () -> {
-                                    //subsystem.rightClawClosed();
-                                    //subsystem.leftClawClosed();
-                                    //left claw close
-                                })
-                                .waitSeconds(1)
-                                .addTemporalMarker( () -> {
-                                    //subsystem.armUp();
-                                    //left claw close
-                                })
-                                .waitSeconds(0.5)
-                                .forward(14)
-
-                                // center
-
-                                .lineToSplineHeading(new Pose2d(-48,-48, Math.toRadians(90))) //spline to according side
-                                .addTemporalMarker( () -> {
-                                    //subsystem.armDown();
-                                })
+                                .lineToSplineHeading(new Pose2d(32,-38, Math.toRadians(180)))
                                 .back(3)
-                                .waitSeconds(1.5)
-                                .forward(12)
-                                .addTemporalMarker( () -> {
-                                    //subsystem.leftClawOpen();
-                                })
-                                .waitSeconds(1.5)
-                                .back(10)
-                                .waitSeconds(2)
-                                .addTemporalMarker( () -> {
-                                    //subsystem.armUp();
-                                })
-                                .strafeLeft(12)
-                                .forward(40)
-                                .strafeRight(80)
-                                .turn(Math.toRadians(180))
-                                .strafeLeft(40)
-                                .addTemporalMarker( () -> {
-                                    //subsystem.rightClawOpen();
-                                })
+                                .lineToSplineHeading(new Pose2d(51,-43, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
                                 .build()
-
-
-
                 );
+         */
+
+
+        /*
+        red front left
+        Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
+
+        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(startPose)
+                                .lineToSplineHeading(new Pose2d(12,-34, Math.toRadians(180)))
+                                .forward(4)
+                                .back(3)
+                                .lineToSplineHeading(new Pose2d(49,-29, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
+                                .build()
+                );
+         */
+
+
+        /*
+        red front center
+        Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
+
+        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(startPose)
+                                .lineToSplineHeading(new Pose2d(21,-26, Math.toRadians(180)))
+                                .back(3)
+                                .lineToSplineHeading(new Pose2d(50,-37, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
+                                .build()
+                );
+         */
+
+        /*
+        blue front left
+        Pose2d startPose = new Pose2d(12, 60, Math.toRadians(270));
+
+        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(startPose)
+                                .lineToSplineHeading(new Pose2d(30,38, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(50,38, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(48,58, Math.toRadians(180)))
+                                .build()
+                );
+        */
+
+        /*
+        blue front right
+        Pose2d startPose = new Pose2d(12, 60, Math.toRadians(270));
+
+        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(startPose)
+                                .lineToSplineHeading(new Pose2d(12,34, Math.toRadians(180)))
+                                .forward(3)
+                                .lineToSplineHeading(new Pose2d(49,28, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(48,58, Math.toRadians(180)))
+                                .build()
+                );
+        */
+
+        /*
+        blue front center
+        Pose2d startPose = new Pose2d(12, 60, Math.toRadians(270));
+
+        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(startPose)
+                                .lineToSplineHeading(new Pose2d(17,22, Math.toRadians(180)))
+                                .back(3)
+                                .lineToSplineHeading(new Pose2d(48,35, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(48,58, Math.toRadians(180)))
+                                .build()
+                );
+         */
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)
