@@ -67,7 +67,31 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 .forward(14)
                 .build();
 
-
+        TrajectorySequence leftSeq = drive.trajectorySequenceBuilder(initSeq.end())
+                .lineToSplineHeading(new Pose2d(18,34, Math.toRadians(0))) //spline to according side
+                .addTemporalMarker( () -> {
+                    subsystem.armDown();
+                    //right claw open
+                })
+                .waitSeconds(2)
+                .addTemporalMarker( () -> {
+                    subsystem.armUp();
+                    //right claw close
+                })
+                .forward(30) //adjust depending on location
+                .strafeLeft(8) //adjust depending
+                .addTemporalMarker( () -> {
+                    subsystem.slidePositionTo(500);
+                    //left claw open
+                })
+                .waitSeconds(5)
+                .addTemporalMarker( () -> {
+                    subsystem.slideDown();
+                    //left claw close
+                })
+                .strafeLeft(15)
+                .turn(Math.toRadians(-90))
+                        .build();
 
         TrajectorySequence rightSeq = drive.trajectorySequenceBuilder(initSeq.end())
                 .forward(3)
@@ -155,7 +179,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 .back(2)
                 .build();
 
-        TrajectorySequence leftSeq = drive.trajectorySequenceBuilder(initSeq.end())
+         leftSeq = drive.trajectorySequenceBuilder(initSeq.end())
                 .lineToSplineHeading(new Pose2d(22,48, Math.toRadians(-90))) //spline to according side
                 .addTemporalMarker( () -> {
                     subsystem.armDown();
