@@ -10,8 +10,8 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(700);
 
-        /*
-        red front right
+
+        //red front right
         Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
@@ -25,7 +25,7 @@ public class MeepMeepTesting {
                                 .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
                                 .build()
                 );
-         */
+
 
 
         /*

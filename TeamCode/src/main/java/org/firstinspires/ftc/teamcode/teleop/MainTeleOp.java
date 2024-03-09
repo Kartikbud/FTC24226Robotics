@@ -34,14 +34,18 @@ public class MainTeleOp extends LinearOpMode {
     double DRIVE_POWER_SCALE = 0.8;
     double SLIDE_POWER_SCALE = 0.25;
     double FINE_DRIVE_POWER_SCALE = DRIVE_POWER_SCALE/3;
-    double armUpPos = 0.65;
-    double armDownPos = 0.02;
+    double armUpPos = 0.3;
+    double armDownPos = 0;
+    double armPlacePos = 1;
+    boolean outTake = false;
     double clawClosedPos = 1;
     double clawOpenPos = 0.85;
     double droneLockPos = 0.23;
     double droneUnlockPos = 1;
-    int slideMaxPos = 600;
+    int slideMaxPos = 2850;
+    int slideHangPos = 300;
     int slideMinPos = 0;
+
 
 
     @Override
@@ -66,6 +70,8 @@ public class MainTeleOp extends LinearOpMode {
         rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
         rightSlide.setDirection(DcMotor.Direction.FORWARD);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -112,6 +118,7 @@ public class MainTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             myRobotOrientation = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
+
             //drive
             lateral_drive = gamepad1.left_stick_x;
             yaw_drive = gamepad1.right_stick_x;
@@ -153,12 +160,26 @@ public class MainTeleOp extends LinearOpMode {
             if (gamepad2.left_stick_button){
                 slide(slideMinPos);
             }
+            if (gamepad2.dpad_down) {
+                slide(slideHangPos);
+            }
 
             //arm  NEED TO ADD MORE
-            if (gamepad2.x) {
-                armDown();
+            if (outTake) {
+                armPlace();
+
+                if (gamepad2.x) {
+                    outTake = false;
+                }
+
             } else {
-                armUp();
+                if (gamepad2.x) {
+                    armDown();
+                } else if (gamepad2.y) {
+                    outTake = true;
+                } else {
+                    armUp();
+                }
             }
 
             //drone
@@ -181,19 +202,12 @@ public class MainTeleOp extends LinearOpMode {
             }
 
 
-            if (gamepad2.dpad_down) {
-                clawRotate(0.5);
-            }
-            if (gamepad2.dpad_up){
-                clawRotate(0);
-            }
-
 
             mecanum_drive_robot(axial_drive,lateral_drive,yaw_drive);
 
 
-            telemetry.addData("right", rightArm.getPosition());
-            telemetry.addData("left", leftArm.getPosition());
+            telemetry.addData("rightSlide: ", rightSlide.getCurrentPosition());
+            telemetry.addData("leftSlide: ", leftSlide.getCurrentPosition());
             telemetry.update();
 
         }
@@ -256,6 +270,11 @@ public class MainTeleOp extends LinearOpMode {
     public void armDown() {
         leftArm.setPosition(armDownPos);
         rightArm.setPosition(armDownPos);
+    }
+
+    public void armPlace() {
+        leftArm.setPosition(armPlacePos);
+        rightArm.setPosition(armPlacePos);
     }
 
     public void armVarPos(double position) {
