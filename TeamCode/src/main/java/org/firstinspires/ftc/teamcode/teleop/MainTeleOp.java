@@ -20,7 +20,6 @@ public class MainTeleOp extends LinearOpMode {
     DcMotor leftSlide, rightSlide;
     Servo leftArm, rightArm;
     Servo leftClaw, rightClaw;
-
     Servo leftClawRotate, rightClawRotate;
     Servo drone;
     IMU imu;
@@ -29,8 +28,6 @@ public class MainTeleOp extends LinearOpMode {
     double axial_drive;
     double lateral_drive;
     double yaw_drive;
-    double input_lift;
-    double liftDistance;
 
 
     //constants
@@ -39,19 +36,12 @@ public class MainTeleOp extends LinearOpMode {
     double FINE_DRIVE_POWER_SCALE = DRIVE_POWER_SCALE/3;
     double armUpPos = 0.65;
     double armDownPos = 0.02;
-    double liftCountPerRev = 1440;
-    double slideCountPerRev = 383.6;
-    double diameterLift = 0.88;
-    double diameterSlide = 1.4;
-    double liftCountPerInch = liftCountPerRev / (diameterLift * Math.PI);
-    double slideCountPerInch = slideCountPerRev / (diameterSlide + Math.PI);
-    double slideMaxDistance = 20.3418124319;
-    double slideMinDistance = 0;
     double clawClosedPos = 1;
     double clawOpenPos = 0.85;
     double droneLockPos = 0.23;
     double droneUnlockPos = 1;
-    boolean slideLiftSyncOn = true;
+    int slideMaxPos = 600;
+    int slideMinPos = 0;
 
 
     @Override
@@ -79,20 +69,6 @@ public class MainTeleOp extends LinearOpMode {
         leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //lift initialization
-        /*
-        leftLift = hardwareMap.get(DcMotor.class, "leftLift");
-        rightLift = hardwareMap.get(DcMotor.class, "rightLift");
-        leftLift.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightLift.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftLift.setTargetPosition(liftDownPos);
-        rightLift.setTargetPosition(liftDownPos);
-        leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        */
-
         //arm initialization
         leftArm = hardwareMap.get(Servo.class, "leftArm");
         rightArm = hardwareMap.get(Servo.class, "rightArm");
@@ -105,7 +81,7 @@ public class MainTeleOp extends LinearOpMode {
         rightClaw.setDirection(Servo.Direction.FORWARD);
         leftClaw.setDirection(Servo.Direction.REVERSE);
 
-        //claw rotate init
+        //claw rotate initialization
         leftClawRotate = hardwareMap.get(Servo.class, "leftClawRotate");
         rightClawRotate = hardwareMap.get(Servo.class, "rightClawRotate");
         rightClawRotate.setDirection(Servo.Direction.FORWARD);
@@ -119,7 +95,7 @@ public class MainTeleOp extends LinearOpMode {
         //imu initialization
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         imu.resetYaw();
@@ -136,6 +112,7 @@ public class MainTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             myRobotOrientation = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
+            //drive
             lateral_drive = gamepad1.left_stick_x;
             yaw_drive = gamepad1.right_stick_x;
             if (gamepad1.right_trigger > 0 ) {
@@ -146,74 +123,72 @@ public class MainTeleOp extends LinearOpMode {
                 axial_drive = -gamepad1.left_stick_y;
             }
 
-            input_lift = gamepad2.left_stick_y;
-
+            //fine drive
             if (gamepad1.dpad_down) {
                 axial_drive = -FINE_DRIVE_POWER_SCALE;
             }
-
             if (gamepad1.dpad_left) {
                 lateral_drive = -FINE_DRIVE_POWER_SCALE;
             }
-
             if (gamepad1.dpad_right) {
                 lateral_drive = FINE_DRIVE_POWER_SCALE;
             }
-
             if (gamepad1.dpad_up) {
                 axial_drive = FINE_DRIVE_POWER_SCALE;
             }
-
             if (gamepad1.right_bumper) {
                 yaw_drive = FINE_DRIVE_POWER_SCALE;
             }
-
             if (gamepad1.left_bumper) {
                 yaw_drive = -FINE_DRIVE_POWER_SCALE;
             }
 
+            //slide
             if (gamepad2.b){
-                slide(1000);
+                slide(slideMaxPos);
             }
             if (gamepad2.a){
-                slide(500);
+                slide(slideMaxPos/2);
             }
-            if (gamepad2.dpad_down){
-                slide(0);
+            if (gamepad2.left_stick_button){
+                slide(slideMinPos);
             }
 
-
+            //arm  NEED TO ADD MORE
             if (gamepad2.x) {
                 armDown();
             } else {
                 armUp();
             }
 
+            //drone
             if (gamepad1.y) {
                 droneUnlock();
             } else {
                 droneLock();
             }
 
+            //claw
             if (gamepad2.right_bumper) {
-                rightClaw(clawOpenPos);
+                rightClawOpen();
             } else {
-                rightClaw(clawClosedPos);
+                rightClawClosed();
+            }
+            if (gamepad2.left_bumper) {
+                leftClawOpen();
+            } else {
+                leftClawClosed();
             }
 
-            if (gamepad2.left_bumper) {
-                leftClaw(clawOpenPos);
-            } else {
-                leftClaw(clawClosedPos);
-            }
 
             if (gamepad2.dpad_down) {
                 clawRotate(0.5);
-            } else {
+            }
+            if (gamepad2.dpad_up){
                 clawRotate(0);
             }
 
-            //mecanum_drive_robot(axial_drive,lateral_drive,yaw_drive,myRobotOrientation.firstAngle);
+
             mecanum_drive_robot(axial_drive,lateral_drive,yaw_drive);
 
 
@@ -264,8 +239,6 @@ public class MainTeleOp extends LinearOpMode {
         rightRear.setPower(rightRearPower * DRIVE_POWER_SCALE);
     }
 
-
-
     public void slide(int position) {
         leftSlide.setTargetPosition(position);
         rightSlide.setTargetPosition(position);
@@ -281,9 +254,6 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     public void armDown() {
-        //rightArm.setPosition(Range.clip(0, 1, rightArm.getPosition() + .01));
-        //leftArm.setPosition(Range.clip(0, 1, leftArm.getPosition() + .01));
-
         leftArm.setPosition(armDownPos);
         rightArm.setPosition(armDownPos);
     }
@@ -301,33 +271,21 @@ public class MainTeleOp extends LinearOpMode {
         drone.setPosition(droneUnlockPos);
     }
 
-    /*
-    public void lift(double power) {
-        if (power > 0) {
-            leftLift.setTargetPosition(leftLift.getCurrentPosition() + 200);
-            rightLift.setTargetPosition(rightLift.getCurrentPosition() + 200);
-            leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            leftLift.setPower(LIFT_POWER_SCALE);
-            rightLift.setPower(LIFT_POWER_SCALE);
-        } else if (power < 0) {
-            leftLift.setTargetPosition(leftLift.getCurrentPosition() - 200);
-            rightLift.setTargetPosition(rightLift.getCurrentPosition() - 200);
-            leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            leftLift.setPower(-LIFT_POWER_SCALE);
-            rightLift.setPower(-LIFT_POWER_SCALE);
-        } else {
-            leftLift.setTargetPosition(leftLift.getCurrentPosition());
-            rightLift.setTargetPosition(rightLift.getCurrentPosition());
-            leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            leftLift.setPower(LIFT_POWER_SCALE);
-            rightLift.setPower(LIFT_POWER_SCALE);
-        }
+    public void rightClawOpen() {
+        rightClaw.setPosition(clawOpenPos);
     }
 
-     */
+    public void rightClawClosed() {
+        rightClaw.setPosition(clawClosedPos);
+    }
+
+    public void leftClawOpen() {
+        leftClaw.setPosition(clawOpenPos);
+    }
+
+    public void leftClawClosed() {
+        leftClaw.setPosition(clawClosedPos);
+    }
 
     public void rightClaw (double position) {
         rightClaw.setPosition(position);
@@ -337,55 +295,9 @@ public class MainTeleOp extends LinearOpMode {
         leftClaw.setPosition(position);
     }
 
-    public void driveCorrection(double heading) {
-        telemetry.addData("Heading: ", heading);
-        telemetry.update();
-        if (-45 <= heading && heading <= 45) {
-            if (heading < 0) {
-                yaw_drive = -0.5;
-            } else if (heading > 0) {
-                yaw_drive = 0.5;
-            } else {
-                yaw_drive = 0;
-            }
-        } else if (-135 <= heading && heading < -45) {
-            if (heading < -90) {
-                yaw_drive = -0.5;
-            } else if (heading > -90) {
-                yaw_drive = 0.5;
-            } else {
-                yaw_drive = 0;
-            }
-        } else if (45 < heading && heading <= 135) {
-            if (heading < 90) {
-                yaw_drive = -0.5;
-            } else if (heading > 90) {
-                yaw_drive = 0.5;
-            } else {
-                yaw_drive = 0;
-            }
-        } else if (heading > 135 || heading < -135){
-            if (heading < 180) {
-                yaw_drive = -0.5;
-            } else if (heading > -180) {
-                yaw_drive = 0.5;
-            } else {
-                yaw_drive = 0;
-            }
-        }
-
-
-
-
-    }
-
     public void clawRotate (double position) {
         leftClawRotate.setPosition(position);
         rightClawRotate.setPosition(position);
     }
-
-    /*public void flipTurn(double heading) {
-        if
-    }*/
 
 }
