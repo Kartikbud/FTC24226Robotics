@@ -97,8 +97,8 @@ public class MeepMeepTesting {
                 );
         */
 
-        /*
-        blue front center
+
+        //blue front center
         Pose2d startPose = new Pose2d(12, 60, Math.toRadians(270));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
@@ -112,7 +112,7 @@ public class MeepMeepTesting {
                                 .lineToSplineHeading(new Pose2d(48,58, Math.toRadians(180)))
                                 .build()
                 );
-         */
+
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)
