@@ -60,7 +60,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 })
                 .waitSeconds(1)
                 .addTemporalMarker( () -> {
-                    subsystem.armUp();
+                    //subsystem.armUp();
                     //left claw close
                 })
                 .waitSeconds(0.5)
@@ -241,7 +241,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
         waitForStart();
 
         if (!isStopRequested()){
-            drive.followTrajectorySequence(initSeq);
+            //drive.followTrajectorySequence(initSeq);
 
             //side = cameraDetection.elementDetection(telemetry);
 

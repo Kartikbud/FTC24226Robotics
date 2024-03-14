@@ -31,19 +31,25 @@ public class MainTeleOp extends LinearOpMode {
 
 
     //constants
-    double DRIVE_POWER_SCALE = 0.8;
-    double SLIDE_POWER_SCALE = 0.25;
+    double DRIVE_POWER_SCALE = 1;
+    double SLIDE_POWER_SCALE = 0.60;
     double FINE_DRIVE_POWER_SCALE = DRIVE_POWER_SCALE/3;
-    double armUpPos = 0.3;
-    double armDownPos = 0;
-    double armPlacePos = 1;
+    double armUpPos = 0.4;
+    double armDownPos = 0.02;
+    double armPlacePos = 0.85;
+    double armOffset = 0.015;
+    double rightArmIncrement = -0.005;
     boolean outTake = false;
     double clawClosedPos = 1;
-    double clawOpenPos = 0.85;
-    double droneLockPos = 0.23;
-    double droneUnlockPos = 1;
-    int slideMaxPos = 2850;
-    int slideHangPos = 300;
+    double clawOpenPos = 0.8;
+    double clawRotateDownPos = 0.9;
+    double clawRotateUpPos = 0;
+    double clawRotatePlacePos = 0.3;
+    double clawRotatePlaceDownPos = 1;
+    double droneLockPos = 0.3;
+    double droneUnlockPos = 0.6;
+    int slideMaxPos = 2450;
+    int slideHangPos = 400;
     int slideMinPos = 0;
 
 
@@ -96,7 +102,7 @@ public class MainTeleOp extends LinearOpMode {
 
         //drone initialization
         drone = hardwareMap.get(Servo.class, "drone");
-        drone.setDirection(Servo.Direction.REVERSE);
+        drone.setDirection(Servo.Direction.FORWARD);
 
         //imu initialization
         imu = hardwareMap.get(IMU.class, "imu");
@@ -151,36 +157,46 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             //slide
-            if (gamepad2.b){
+            if (gamepad2.y){
                 slide(slideMaxPos);
             }
-            if (gamepad2.a){
+            if (gamepad2.x){
                 slide(slideMaxPos/2);
+            }
+            if (gamepad2.b) {
+                slide(slideMaxPos/3);
             }
             if (gamepad2.left_stick_button){
                 slide(slideMinPos);
             }
-            if (gamepad2.dpad_down) {
-                slide(slideHangPos);
-            }
+
 
             //arm  NEED TO ADD MORE
             if (outTake) {
                 armPlace();
-
-                if (gamepad2.x) {
+                if (gamepad2.a) {
+                    clawRotatePlaceDown();
+                }
+                if (gamepad2.dpad_down) {
                     outTake = false;
                 }
-
             } else {
-                if (gamepad2.x) {
-                    armDown();
-                } else if (gamepad2.y) {
+                if (gamepad2.dpad_down) {
+                    clawRotateDown();
+                    if (rightArm.getPosition() >= armDownPos) {
+                        armVarPos(rightArm.getPosition() + rightArmIncrement);
+                    }
+                } else if (gamepad2.dpad_up) {
                     outTake = true;
+                    clawRotatePlace();
                 } else {
                     armUp();
+                    if (rightArm.getPosition() > 0.28){
+                        clawRotateUp();
+                    }
                 }
             }
+
 
             //drone
             if (gamepad1.y) {
@@ -202,12 +218,15 @@ public class MainTeleOp extends LinearOpMode {
             }
 
 
-
             mecanum_drive_robot(axial_drive,lateral_drive,yaw_drive);
 
 
             telemetry.addData("rightSlide: ", rightSlide.getCurrentPosition());
             telemetry.addData("leftSlide: ", leftSlide.getCurrentPosition());
+            telemetry.addData("rightArm: ", rightArm.getPosition());
+            telemetry.addData("leftArm: ", leftArm.getPosition());
+            telemetry.addData("rightClawRotate: ", rightClawRotate.getPosition());
+            telemetry.addData("leftClawRotate: ", leftClawRotate.getPosition());
             telemetry.update();
 
         }
@@ -263,22 +282,22 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     public void armUp() {
-        leftArm.setPosition(armUpPos);
+        leftArm.setPosition(armUpPos + armOffset);
         rightArm.setPosition(armUpPos);
     }
 
     public void armDown() {
-        leftArm.setPosition(armDownPos);
+        leftArm.setPosition(armDownPos + armOffset);
         rightArm.setPosition(armDownPos);
     }
 
     public void armPlace() {
-        leftArm.setPosition(armPlacePos);
+        leftArm.setPosition(armPlacePos + armOffset);
         rightArm.setPosition(armPlacePos);
     }
 
     public void armVarPos(double position) {
-        leftArm.setPosition(position);
+        leftArm.setPosition(position + armOffset);
         rightArm.setPosition(position);
     }
 
@@ -317,6 +336,34 @@ public class MainTeleOp extends LinearOpMode {
     public void clawRotate (double position) {
         leftClawRotate.setPosition(position);
         rightClawRotate.setPosition(position);
+    }
+
+    public void clawRotateDown () {
+        leftClawRotate.setPosition(clawRotateDownPos);
+        rightClawRotate.setPosition(clawRotateDownPos);
+    }
+
+    public void clawRotateUp () {
+        leftClawRotate.setPosition(clawRotateUpPos);
+        rightClawRotate.setPosition(clawRotateUpPos);
+    }
+
+    public void clawRotatePlace () {
+        leftClawRotate.setPosition(clawRotatePlacePos);
+        rightClawRotate.setPosition(clawRotatePlacePos);
+    }
+
+    public void clawRotatePlaceDown () {
+        leftClawRotate.setPosition(clawRotatePlaceDownPos);
+        rightClawRotate.setPosition(clawRotatePlaceDownPos);
+    }
+
+    public boolean buffer(double desired, double actual) {
+        if (desired/actual < 1.02 && desired/actual > 0.98) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

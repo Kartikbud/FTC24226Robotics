@@ -10,9 +10,8 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(700);
 
-
         //red front right
-        Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
+        /*Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -24,13 +23,13 @@ public class MeepMeepTesting {
                                 .lineToSplineHeading(new Pose2d(51,-43, Math.toRadians(180)))
                                 .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
                                 .build()
-                );
+                );*/
 
 
 
-        /*
-        red front left
-        Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
+
+        //red front left
+        /*Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -44,12 +43,11 @@ public class MeepMeepTesting {
                                 .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
                                 .build()
                 );
-         */
 
 
-        /*
-        red front center
-        Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
+
+        //red front center
+        /*Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -107,8 +105,27 @@ public class MeepMeepTesting {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(startPose)
                                 .lineToSplineHeading(new Pose2d(17,22, Math.toRadians(180)))
-                                .back(3)
+                                .addTemporalMarker(() -> {
+                                    //place pixel
+                                })
+                                .waitSeconds(1)
+                                .back(3) //might not be needed
                                 .lineToSplineHeading(new Pose2d(48,35, Math.toRadians(180)))
+                                .addTemporalMarker(() -> {
+                                    //arm into scoring position
+                                })
+                                .waitSeconds(0.5)
+                                .addTemporalMarker(() -> {
+                                    //slide up
+                                })
+                                .waitSeconds(3)
+                                .addTemporalMarker(() -> {
+                                    //place
+                                })
+                                .waitSeconds(0.1)
+                                .addTemporalMarker(() -> {
+                                    //slide down
+                                })
                                 .lineToSplineHeading(new Pose2d(48,58, Math.toRadians(180)))
                                 .build()
                 );
