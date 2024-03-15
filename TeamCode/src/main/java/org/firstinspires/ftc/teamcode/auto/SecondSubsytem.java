@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class SecondSubsytem {
-
-    DcMotor rightFront, rightRear, leftFront, leftRear;
     DcMotor leftSlide, rightSlide;
     Servo leftArm, rightArm;
     Servo leftClaw, rightClaw;

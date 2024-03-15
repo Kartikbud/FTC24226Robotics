@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-@Autonomous(name = "blueFrontPixels")
+@Autonomous(name = "redFrontPixels")
 public class redFrontPixelAuto extends LinearOpMode {
 
     String side = "Center";

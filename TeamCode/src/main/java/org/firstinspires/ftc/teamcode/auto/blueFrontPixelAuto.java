@@ -45,7 +45,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        Subsystem subsystem = new Subsystem(hardwareMap);
+        SecondSubsytem subsystem = new SecondSubsytem(hardwareMap);
 
         Pose2d startPose = new Pose2d(12, 60, Math.toRadians(270));
 
