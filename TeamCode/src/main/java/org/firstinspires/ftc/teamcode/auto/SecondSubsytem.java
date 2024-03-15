@@ -15,6 +15,19 @@ public class SecondSubsytem {
     double clawOpenPos = 0.8;
     double droneLockPos = 0.3;
 
+    //from teleop
+    double armUpPos = 0.4;
+    double armDownPos = 0;
+    double armPlacePos = 0.85;
+    double armOffset = 0.015;
+
+    double clawRotateDownPos = 0.67;
+    double clawRotateUpPos = 0;
+    double clawRotatePlacePos = 0.3;
+    double clawRotatePlaceDownPos = 1;
+
+    int slideMax = 2485;
+
 
     public SecondSubsytem(HardwareMap hardwareMap) {
         leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
@@ -53,7 +66,7 @@ public class SecondSubsytem {
 
     public void armPos(double pos) {
         pos = constrain((double) pos, (double) 0, (double) 1);
-        leftArm.setPosition(pos);
+        leftArm.setPosition(pos + armOffset);
         rightArm.setPosition(pos);
     }
 
