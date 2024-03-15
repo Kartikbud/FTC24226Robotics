@@ -7,26 +7,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class SecondSubsytem {
 
+    DcMotor rightFront, rightRear, leftFront, leftRear;
     DcMotor leftSlide, rightSlide;
-
-    DcMotor leftLift, rightLift;
     Servo leftArm, rightArm;
-
     Servo leftClaw, rightClaw;
-    public int slideDownPos = 0;
-    public int slideUpPos = 1600;
-    public double armDownPos = 0;
-    public double armUpPos = 0.583;
-
-    double clawClosed = 1;
-    double clawOpen = 0.85;
-
-    double liftCountPerRev = 1440;
-    double slideCountPerRev = 383.6;
-    double diameterLift = 0.88;
-    double diameterSlide = 1.4;
-    double liftCountPerInch = liftCountPerRev / (diameterLift * Math.PI);
-    double slideCountPerInch = slideCountPerRev / (diameterSlide + Math.PI);
+    Servo leftClawRotate, rightClawRotate;
+    Servo drone;
+    double clawClosedPos = 1;
+    double clawOpenPos = 0.8;
+    double droneLockPos = 0.3;
 
 
     public SecondSubsytem(HardwareMap hardwareMap) {
@@ -36,8 +25,8 @@ public class SecondSubsytem {
         rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftSlide.setTargetPosition(slideDownPos);
-        rightSlide.setTargetPosition(slideDownPos);
+        leftSlide.setTargetPosition(0);
+        rightSlide.setTargetPosition(0);
         leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -51,86 +40,57 @@ public class SecondSubsytem {
         rightClaw.setDirection(Servo.Direction.FORWARD);
         leftClaw.setDirection(Servo.Direction.REVERSE);
 
-        leftLift = hardwareMap.get(DcMotor.class, "leftLift");
-        rightLift = hardwareMap.get(DcMotor.class, "rightLift");
-        leftLift.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightLift.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftClawRotate = hardwareMap.get(Servo.class, "leftClawRotate");
+        rightClawRotate = hardwareMap.get(Servo.class, "rightClawRotate");
+        rightClawRotate.setDirection(Servo.Direction.FORWARD);
+        leftClawRotate.setDirection(Servo.Direction.REVERSE);
+
+
+        //drone initialization
+        drone = hardwareMap.get(Servo.class, "drone");
+        drone.setDirection(Servo.Direction.FORWARD);
+
+
     }
 
-    public void armUp() {
-        leftArm.setPosition(armUpPos);
-        rightArm.setPosition(armUpPos);
+    public void armPos(double pos) {
+        pos = constrain((double) pos, (double) 0, (double) 1);
+        leftArm.setPosition(pos);
+        rightArm.setPosition(pos);
     }
 
-    public void armDown() {
-        leftArm.setPosition(armDownPos);
-        rightArm.setPosition(armDownPos);
-    }
-
-    public void armPositionTo(double position) {
-        position = constrain((double) position, (double) armDownPos, (double) armUpPos);
-        leftArm.setPosition(position);
-        rightArm.setPosition(position);
-    }
-
-    public void slideUp() {
-        leftSlide.setTargetPosition(slideUpPos);
-        rightSlide.setTargetPosition(slideUpPos);
+    public void slidePos(int pos) {
+        leftSlide.setTargetPosition(pos);
+        rightSlide.setTargetPosition(pos);
         leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftSlide.setPower(0.3);
-        rightSlide.setPower(0.3);
+        leftSlide.setPower(0.5);
+        rightSlide.setPower(0.5);
     }
 
-    public void slideDown() {
-        leftSlide.setTargetPosition(slideDownPos);
-        rightSlide.setTargetPosition(slideDownPos);
-        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftSlide.setPower(0.3);
-        rightSlide.setPower(0.3);
-    }
-
-    public void slidePositionTo(int position) {
-
-        double liftDistance;
-
-        if ((position) > leftSlide.getCurrentPosition()) {
-            liftDistance = (position/slideCountPerInch) - 4;
-        } else {
-            liftDistance = (position/slideCountPerInch);
-        }
-
-        position = constrain((int) position, (int) slideDownPos, (int) slideUpPos);
-        leftSlide.setTargetPosition(position);
-        rightSlide.setTargetPosition(position);
-        /*leftLift.setTargetPosition((int) (liftCountPerInch * liftDistance));
-        rightLift.setTargetPosition((int) (liftCountPerInch * liftDistance));*/
-        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        /*rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftLift.setMode((DcMotor.RunMode.RUN_TO_POSITION));*/
-        leftSlide.setPower(0.4);
-        rightSlide.setPower(0.4);
-        /*leftLift.setPower(0.625);
-        rightLift.setPower(0.625);*/
-
+    public void lockDrone () {
+        drone.setPosition(droneLockPos);
     }
 
     public void rightClawOpen () {
-        rightClaw.setPosition(clawOpen);
+        rightClaw.setPosition(clawOpenPos);
     }
 
     public void rightClawClosed () {
-        rightClaw.setPosition(clawClosed);
+        rightClaw.setPosition(clawClosedPos);
     }
 
     public void leftClawOpen () {
-        leftClaw.setPosition(clawOpen);
+        leftClaw.setPosition(clawOpenPos);
     }
 
     public void leftClawClosed () {
-        leftClaw.setPosition(clawClosed);
+        leftClaw.setPosition(clawClosedPos);
+    }
+
+    public void clawRotatePos (double pos) {
+        leftClawRotate.setPosition(pos);
+        rightClawRotate.setPosition(pos);
     }
 
     public double constrain(double value, double min, double max) {

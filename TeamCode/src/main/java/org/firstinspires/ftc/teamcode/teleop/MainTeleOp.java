@@ -35,14 +35,14 @@ public class MainTeleOp extends LinearOpMode {
     double SLIDE_POWER_SCALE = 0.60;
     double FINE_DRIVE_POWER_SCALE = DRIVE_POWER_SCALE/3;
     double armUpPos = 0.4;
-    double armDownPos = 0.02;
+    double armDownPos = 0;
     double armPlacePos = 0.85;
     double armOffset = 0.015;
-    double rightArmIncrement = -0.005;
+    double rightArmIncrement = -0.007;
     boolean outTake = false;
     double clawClosedPos = 1;
     double clawOpenPos = 0.8;
-    double clawRotateDownPos = 0.9;
+    double clawRotateDownPos = 0.67;
     double clawRotateUpPos = 0;
     double clawRotatePlacePos = 0.3;
     double clawRotatePlaceDownPos = 1;
