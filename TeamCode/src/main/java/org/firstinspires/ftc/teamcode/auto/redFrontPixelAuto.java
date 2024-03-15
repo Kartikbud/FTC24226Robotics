@@ -2,21 +2,15 @@ package org.firstinspires.ftc.teamcode.auto;
 
 //import org.firstinspires.ftc.teamcode.auto.RobotFunctions;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 @Autonomous(name = "blueFrontPixels")
-public class blueFrontPixelAuto extends LinearOpMode {
+public class redFrontPixelAuto extends LinearOpMode {
 
     String side = "Center";
 
@@ -47,7 +41,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
 
         Subsystem subsystem = new Subsystem(hardwareMap);
 
-        Pose2d startPose = new Pose2d(12, 60, Math.toRadians(270));
+        Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
 
@@ -57,12 +51,12 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     //init positions
                 })
-                .lineToSplineHeading(new Pose2d(26,22, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(26,-22, Math.toRadians(180)))
                 .addTemporalMarker(() -> {
                     //place pixel
                 })
                 .waitSeconds(1)
-                .lineToSplineHeading(new Pose2d(48,35, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(48,-35, Math.toRadians(180)))
                 .addTemporalMarker(() -> {
                     //arm into scoring position
                 })
@@ -78,20 +72,20 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     //slide down
                 })
-                .lineToSplineHeading(new Pose2d(48,58, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
                 .build();
 
         TrajectorySequence rightSeq = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> {
                     //init positions
                 })
-                .lineToSplineHeading(new Pose2d(18,34, Math.toRadians(180)))
-                .lineToSplineHeading(new Pose2d(9,34, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(18,-34, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(9,-34, Math.toRadians(180)))
                 .addTemporalMarker(() -> {
                     //place pixel
                 })
                 .waitSeconds(1)
-                .lineToSplineHeading(new Pose2d(49,30, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(49,-30, Math.toRadians(180)))
                 .addTemporalMarker(() -> {
                     //arm into scoring position
                 })
@@ -107,19 +101,19 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     //slide down
                 })
-                .lineToSplineHeading(new Pose2d(48,58, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
                 .build();
 
         TrajectorySequence leftSeq = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> {
                     //init positions
                 })
-                .lineToSplineHeading(new Pose2d(32,32, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(32,-32, Math.toRadians(180)))
                 .addTemporalMarker(() -> {
                     //place pixel
                 })
                 .waitSeconds(1)
-                .lineToSplineHeading(new Pose2d(48,43, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(48,-43, Math.toRadians(180)))
                 .addTemporalMarker(() -> {
                     //arm into scoring position
                 })
@@ -135,7 +129,7 @@ public class blueFrontPixelAuto extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     //slide down
                 })
-                .lineToSplineHeading(new Pose2d(48,58, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
                 .build();
 
         /*TrajectorySequence initSeq = drive.trajectorySequenceBuilder(startPose)

@@ -10,6 +10,7 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(700);
 
+
         //red front right
         /*Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
 
@@ -27,9 +28,9 @@ public class MeepMeepTesting {
 
 
 
-
-        //red front left
-        /*Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
+        /*
+        red front left
+        Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -43,43 +44,49 @@ public class MeepMeepTesting {
                                 .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
                                 .build()
                 );
+         */
 
 
 
         //red front center
-        /*Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(startPose)
-                                .lineToSplineHeading(new Pose2d(21,-26, Math.toRadians(180)))
-                                .back(3)
-                                .lineToSplineHeading(new Pose2d(50,-37, Math.toRadians(180)))
+                                .addTemporalMarker(() -> {
+                                    //init positions
+                                })
+                                .lineToSplineHeading(new Pose2d(26,-22, Math.toRadians(180)))
+                                .addTemporalMarker(() -> {
+                                    //place pixel
+                                })
+                                .waitSeconds(1)
+                                .lineToSplineHeading(new Pose2d(48,-35, Math.toRadians(180)))
+                                .addTemporalMarker(() -> {
+                                    //arm into scoring position
+                                })
+                                .waitSeconds(0.5)
+                                .addTemporalMarker(() -> {
+                                    //slide up
+                                })
+                                .waitSeconds(3)
+                                .addTemporalMarker(() -> {
+                                    //place
+                                })
+                                .waitSeconds(0.1)
+                                .addTemporalMarker(() -> {
+                                    //slide down
+                                })
                                 .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
                                 .build()
                 );
-         */
+
 
 
         //blue front left
-        Pose2d startPose = new Pose2d(12, 60, Math.toRadians(270));
-
-        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(startPose)
-                                .lineToSplineHeading(new Pose2d(30,33, Math.toRadians(180)))
-                                .lineToSplineHeading(new Pose2d(48,39, Math.toRadians(180)))
-                                .lineToSplineHeading(new Pose2d(48,58, Math.toRadians(180)))
-                                .build()
-                );
-
-
-
-        //blue front right
         /*Pose2d startPose = new Pose2d(12, 60, Math.toRadians(270));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
@@ -90,12 +97,12 @@ public class MeepMeepTesting {
                                 .addTemporalMarker(() -> {
                                     //init positions
                                 })
-                                .lineToSplineHeading(new Pose2d(18,34, Math.toRadians(180)))
-                                .lineToSplineHeading(new Pose2d(9,34, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(32,32, Math.toRadians(180)))
                                 .addTemporalMarker(() -> {
                                     //place pixel
                                 })
-                                .lineToSplineHeading(new Pose2d(49,30, Math.toRadians(180)))
+                                .waitSeconds(1)
+                                .lineToSplineHeading(new Pose2d(48,43, Math.toRadians(180)))
                                 .addTemporalMarker(() -> {
                                     //arm into scoring position
                                 })
@@ -115,6 +122,25 @@ public class MeepMeepTesting {
                                 .build()
                 );
 
+         */
+
+
+        /*
+        blue front right
+        Pose2d startPose = new Pose2d(12, 60, Math.toRadians(270));
+
+        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(startPose)
+                                .lineToSplineHeading(new Pose2d(12,34, Math.toRadians(180)))
+                                .forward(3)
+                                .lineToSplineHeading(new Pose2d(49,28, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(48,58, Math.toRadians(180)))
+                                .build()
+                );
+        */
 
 
         //blue front center
