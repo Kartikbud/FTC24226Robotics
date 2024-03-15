@@ -34,24 +34,37 @@ public class MainTeleOp extends LinearOpMode {
     double DRIVE_POWER_SCALE = 1;
     double SLIDE_POWER_SCALE = 0.60;
     double FINE_DRIVE_POWER_SCALE = DRIVE_POWER_SCALE/3;
+
+    //arm
     double armUpPos = 0.4;
-    double armDownPos = 0;
-    double armPlacePos = 0.85;
+    double armDownPos = 0.1;
+    double armPlacePos = 0.92;
     double armOffset = 0.015;
     double rightArmIncrement = -0.007;
     boolean outTake = false;
-    double clawClosedPos = 1;
-    double clawOpenPos = 0.8;
+
+    //claw
+    double clawClosedPos = 0.9;
+    double clawOpenPos = 0.7;
+
+    //claw rotate
     double clawRotateDownPos = 0.67;
     double clawRotateUpPos = 0;
     double clawRotatePlacePos = 0.3;
     double clawRotatePlaceDownPos = 1;
+
+    //drone
     double droneLockPos = 0.3;
     double droneUnlockPos = 0.6;
-    int slideMaxPos = 2450;
+
+    //slide
+    int slideMaxPos = 2850;
+    int slideHookPos = 2450;
+    int slideHighPos = 2350;
+    int slideMidPos = 1750;
+    int slideLowPos = 1150;
     int slideHangPos = 400;
     int slideMinPos = 0;
-
 
 
     @Override
@@ -125,10 +138,12 @@ public class MainTeleOp extends LinearOpMode {
             myRobotOrientation = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
 
+            //DRIVER CONTROLS
+
             //drive
             lateral_drive = gamepad1.left_stick_x;
             yaw_drive = gamepad1.right_stick_x;
-            if (gamepad1.right_trigger > 0 ) {
+            if (gamepad1.right_trigger > 0) {
                 axial_drive = gamepad1.right_trigger;
             } else if (gamepad1.left_trigger > 0) {
                 axial_drive = -gamepad1.left_trigger;
@@ -156,22 +171,33 @@ public class MainTeleOp extends LinearOpMode {
                 yaw_drive = -FINE_DRIVE_POWER_SCALE;
             }
 
+            if (gamepad1.y) {
+                droneUnlock();
+            } else {
+                droneLock();
+            }
+
+            mecanum_drive_robot(axial_drive,lateral_drive,yaw_drive);
+
+
+
+            //OPERATOR CONTROLS
+
             //slide
             if (gamepad2.y){
-                slide(slideMaxPos);
+                slide(slideHighPos);
             }
             if (gamepad2.x){
-                slide(slideMaxPos/2);
+                slide(slideMidPos);
             }
             if (gamepad2.b) {
-                slide(slideMaxPos/3);
+                slide(slideLowPos);
             }
             if (gamepad2.left_stick_button){
                 slide(slideMinPos);
             }
 
-
-            //arm  NEED TO ADD MORE
+            //arm
             if (outTake) {
                 armPlace();
                 if (gamepad2.a) {
@@ -199,11 +225,6 @@ public class MainTeleOp extends LinearOpMode {
 
 
             //drone
-            if (gamepad1.y) {
-                droneUnlock();
-            } else {
-                droneLock();
-            }
 
             //claw
             if (gamepad2.right_bumper) {
@@ -218,7 +239,7 @@ public class MainTeleOp extends LinearOpMode {
             }
 
 
-            mecanum_drive_robot(axial_drive,lateral_drive,yaw_drive);
+
 
 
             telemetry.addData("rightSlide: ", rightSlide.getCurrentPosition());
