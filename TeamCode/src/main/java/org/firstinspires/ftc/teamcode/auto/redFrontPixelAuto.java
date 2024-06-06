@@ -18,6 +18,8 @@ public class redFrontPixelAuto extends LinearOpMode {
 
     boolean togglePreview = true;
 
+    int slidePlacePos = 1450;
+
     public void HardwareStart() {
         telemetry.addData("Object Creation", "Start");
         telemetry.update();
@@ -33,7 +35,7 @@ public class redFrontPixelAuto extends LinearOpMode {
 
         HardwareStart();
 
-        String curAlliance = "blue";
+        String curAlliance = "red";
 
         cameraDetection.setAlliance(curAlliance);
 
@@ -47,6 +49,8 @@ public class redFrontPixelAuto extends LinearOpMode {
 
         //String side = cameraDetection.elementDetection(telemetry);
 
+        //RED FRONT CENTRE
+
         TrajectorySequence centreSeq = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> { //initing
                     subsystem.leftClawClosed();
@@ -55,7 +59,7 @@ public class redFrontPixelAuto extends LinearOpMode {
                     subsystem.clawRotatePos(subsystem.clawRotateUpPos);
 
                 })
-                .lineToSplineHeading(new Pose2d(26,-22, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(27,-25, Math.toRadians(180)))
                 .addTemporalMarker(() -> { //placing purple pixel
                     subsystem.clawRotatePos(subsystem.clawRotateDownPos);
 
@@ -66,16 +70,17 @@ public class redFrontPixelAuto extends LinearOpMode {
                 })
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
-                    subsystem.leftClawOpen();
+                    subsystem.rightClawOpen();
                 })
                 .waitSeconds(1)
+                .back(3)
                 .addTemporalMarker(() -> { //following purple pixel placement
                     subsystem.armPos(subsystem.armUpPos);
                     subsystem.clawRotatePos(subsystem.clawRotateUpPos);
-                    subsystem.leftClawClosed();
+                    subsystem.rightClawClosed();
                 })
                 .waitSeconds(1)
-                .lineToSplineHeading(new Pose2d(48,-35, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(51.5,-35.7, Math.toRadians(180)))
                 .addTemporalMarker(() -> { //setting up arm to score
                     subsystem.armPos(subsystem.armPlacePos);
                     subsystem.clawRotatePos(subsystem.clawRotatePlacePos);
@@ -83,66 +88,30 @@ public class redFrontPixelAuto extends LinearOpMode {
                 })
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> { //running slides up
-                    subsystem.slidePos(subsystem.slideMax/2);
+                    subsystem.slidePos(slidePlacePos);
+                    subsystem.clawRotatePos(0.95);
                 })
                 .waitSeconds(3)
+                .back(2)
                 .addTemporalMarker(() -> {
-                    subsystem.rightClawOpen(); //placing yellow pixel
+                    subsystem.leftClawOpen(); //placing yellow pixel
                 })
                 .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    subsystem.slidePos(0); //bringing slides down
-                })
-                .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
-                .build();
-
-        TrajectorySequence rightSeq = drive.trajectorySequenceBuilder(startPose)
+                .forward(3)
+                .waitSeconds(0.2)
                 .addTemporalMarker(() -> {
                     subsystem.leftClawClosed();
                     subsystem.rightClawClosed();
                     subsystem.armPos(subsystem.armUpPos);
                     subsystem.clawRotatePos(subsystem.clawRotateUpPos);
                 })
-                .lineToSplineHeading(new Pose2d(18,-34, Math.toRadians(180)))
-                .lineToSplineHeading(new Pose2d(9,-34, Math.toRadians(180)))
-                .addTemporalMarker(() -> { //placing purple pixel
-                    subsystem.clawRotatePos(subsystem.clawRotateDownPos);
-
-                })
-                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
-                    subsystem.armPos(subsystem.armDownPos);
-                })
-                .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    subsystem.leftClawOpen();
-                })
-                .waitSeconds(1)
-                .addTemporalMarker(() -> { //following purple pixel placement
-                    subsystem.armPos(subsystem.armUpPos);
-                    subsystem.clawRotatePos(subsystem.clawRotateUpPos);
-                    subsystem.leftClawClosed();
-                })
-                .waitSeconds(1)
-                .lineToSplineHeading(new Pose2d(49,-30, Math.toRadians(180)))
-                .addTemporalMarker(() -> {
-                    subsystem.armPos(subsystem.armPlacePos);
-                    subsystem.clawRotatePos(subsystem.clawRotatePlacePos);
-                })
-                .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    subsystem.slidePos(subsystem.slideMax/2);
-                })
-                .waitSeconds(3)
-                .addTemporalMarker(() -> {
-                    subsystem.rightClawOpen();
-                })
-                .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    subsystem.slidePos(0);
+                    subsystem.slidePos(0); //bringing slides down
                 })
                 .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
                 .build();
+
+        //RED FRONT LEFT
 
         TrajectorySequence leftSeq = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> {
@@ -151,7 +120,8 @@ public class redFrontPixelAuto extends LinearOpMode {
                     subsystem.armPos(subsystem.armUpPos);
                     subsystem.clawRotatePos(subsystem.clawRotateUpPos);
                 })
-                .lineToSplineHeading(new Pose2d(32,-32, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(7,-34   , Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(9,-31, Math.toRadians(180)))
                 .addTemporalMarker(() -> { //placing purple pixel
                     subsystem.clawRotatePos(subsystem.clawRotateDownPos);
 
@@ -162,23 +132,99 @@ public class redFrontPixelAuto extends LinearOpMode {
                 })
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
-                    subsystem.leftClawOpen();
+                    subsystem.rightClawOpen();
                 })
                 .waitSeconds(1)
-                .lineToSplineHeading(new Pose2d(48,-43, Math.toRadians(180)))
+                .back(3)
+                .addTemporalMarker(() -> { //following purple pixel placement
+                    subsystem.armPos(subsystem.armUpPos);
+                    subsystem.clawRotatePos(subsystem.clawRotateUpPos);
+                    subsystem.rightClawClosed();
+                })
+                .waitSeconds(1)
+                .lineToSplineHeading(new Pose2d(51,-21, Math.toRadians(180)))
                 .addTemporalMarker(() -> {
                     subsystem.armPos(subsystem.armPlacePos);
                     subsystem.clawRotatePos(subsystem.clawRotatePlacePos);
                 })
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
-                    subsystem.slidePos(subsystem.slideMax/2);
+                    subsystem.slidePos(slidePlacePos);
+                    subsystem.clawRotatePos(0.95);
                 })
                 .waitSeconds(3)
+                .back(2)
+                .addTemporalMarker(() -> {
+                    subsystem.leftClawOpen();
+                })
+                .waitSeconds(0.5)
+                .forward(3)
+                .waitSeconds(0.2)
+                .addTemporalMarker(() -> {
+                    subsystem.leftClawClosed();
+                    subsystem.rightClawClosed();
+                    subsystem.armPos(subsystem.armUpPos);
+                    subsystem.clawRotatePos(subsystem.clawRotateUpPos);
+                })
+                .addTemporalMarker(() -> {
+                    subsystem.slidePos(0);
+                })
+                .forward(2)
+                .lineToSplineHeading(new Pose2d(47,-58, Math.toRadians(180)))
+                .build();
+
+        //RED FRONT RIGHT
+
+        TrajectorySequence rightSeq = drive.trajectorySequenceBuilder(startPose)
+                .addTemporalMarker(() -> {
+                    subsystem.leftClawClosed();
+                    subsystem.rightClawClosed();
+                    subsystem.armPos(subsystem.armUpPos);
+                    subsystem.clawRotatePos(subsystem.clawRotateUpPos);
+                })
+                .lineToSplineHeading(new Pose2d(34,-28, Math.toRadians(180)))
+                .addTemporalMarker(() -> { //placing purple pixel
+                    subsystem.clawRotatePos(subsystem.clawRotateDownPos);
+
+                })
+                .waitSeconds(0.5)
+                .addTemporalMarker(() -> {
+                    subsystem.armPos(subsystem.armDownPos);
+                })
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     subsystem.rightClawOpen();
                 })
+                .waitSeconds(1)
+                .addTemporalMarker(() -> { //following purple pixel placement
+                    subsystem.armPos(subsystem.armUpPos);
+                    subsystem.clawRotatePos(subsystem.clawRotateUpPos);
+                    subsystem.rightClawClosed();
+                })
+                .lineToSplineHeading(new Pose2d(53,-42, Math.toRadians(180)))
+                .addTemporalMarker(() -> {
+                    subsystem.armPos(subsystem.armPlacePos);
+                    subsystem.clawRotatePos(subsystem.clawRotatePlacePos);
+                })
                 .waitSeconds(0.5)
+                .addTemporalMarker(() -> {
+                    subsystem.slidePos(slidePlacePos);
+                    subsystem.clawRotatePos(0.95);
+                })
+                .waitSeconds(3)
+                .back(2)
+                .addTemporalMarker(() -> {
+                    subsystem.leftClawOpen();
+                })
+                .waitSeconds(0.5)
+                .forward(3)
+                .waitSeconds(0.2)
+                .addTemporalMarker(() -> {
+                    subsystem.leftClawClosed();
+                    subsystem.rightClawClosed();
+                    subsystem.armPos(subsystem.armUpPos);
+                    subsystem.clawRotatePos(subsystem.clawRotateUpPos);
+                })
                 .addTemporalMarker(() -> {
                     subsystem.slidePos(0);
                 })
@@ -363,7 +409,7 @@ public class redFrontPixelAuto extends LinearOpMode {
 
         while (!opModeIsActive() && !isStopRequested()){
             side = cameraDetection.elementDetection(telemetry);
-            //telemetry.addData("color", side);
+            telemetry.addData("purple pixel", "red");
 
 
 
@@ -388,5 +434,3 @@ public class redFrontPixelAuto extends LinearOpMode {
         }
     }
 }
-
-

@@ -4,6 +4,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -13,11 +14,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+
 @TeleOp(name = "MainTeleOp")
 public class MainTeleOp extends LinearOpMode {
 
+    Slide lift = new Slide();
+
     DcMotor rightFront, rightRear, leftFront, leftRear;
-    DcMotor leftSlide, rightSlide;
+    DcMotorEx leftSlide, rightSlide;
     Servo leftArm, rightArm;
     Servo leftClaw, rightClaw;
     Servo leftClawRotate, rightClawRotate;
@@ -32,25 +36,25 @@ public class MainTeleOp extends LinearOpMode {
 
     //constants
     double DRIVE_POWER_SCALE = 1;
-    double SLIDE_POWER_SCALE = 0.60;
-    double FINE_DRIVE_POWER_SCALE = DRIVE_POWER_SCALE/3;
+    double SLIDE_POWER_SCALE = 0.75;
+    double FINE_DRIVE_POWER_SCALE = DRIVE_POWER_SCALE/4;
 
     //arm
-    double armUpPos = 0.4;
-    double armDownPos = 0.1;
-    double armPlacePos = 0.92;
-    double armOffset = 0.015;
+    double armUpPos = 0.42;
+    double armDownPos = 0.045;
+    double armPlacePos = 0.9;
+    double armOffset = 0.005;
     double rightArmIncrement = -0.007;
     boolean outTake = false;
 
     //claw
-    double clawClosedPos = 0.9;
+    double clawClosedPos = 0.95;
     double clawOpenPos = 0.7;
 
     //claw rotate
-    double clawRotateDownPos = 0.67;
+    double clawRotateDownPos = 0.63;
     double clawRotateUpPos = 0;
-    double clawRotatePlacePos = 0.3;
+    double clawRotatePlacePos = 0.25;
     double clawRotatePlaceDownPos = 1;
 
     //drone
@@ -58,12 +62,13 @@ public class MainTeleOp extends LinearOpMode {
     double droneUnlockPos = 0.6;
 
     //slide
+    int slidePos = 0;
     int slideMaxPos = 2850;
     int slideHookPos = 2450;
-    int slideHighPos = 2350;
-    int slideMidPos = 1750;
-    int slideLowPos = 1150;
-    int slideHangPos = 400;
+    int slideHighPos = 2450;
+    int slideMidPos = 1850;
+    int slideLowPos = 1000; //1450
+    int slideHangPos = 700;
     int slideMinPos = 0;
 
 
@@ -85,8 +90,8 @@ public class MainTeleOp extends LinearOpMode {
         leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //slide initialization
-        leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
-        rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
+        leftSlide = hardwareMap.get(DcMotorEx.class, "leftSlide");
+        rightSlide = hardwareMap.get(DcMotorEx.class, "rightSlide");
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
         rightSlide.setDirection(DcMotor.Direction.FORWARD);
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -142,13 +147,23 @@ public class MainTeleOp extends LinearOpMode {
 
             //drive
             lateral_drive = gamepad1.left_stick_x;
-            yaw_drive = gamepad1.right_stick_x;
-            if (gamepad1.right_trigger > 0) {
+            yaw_drive = gamepad1.right_stick_x * 0.35;
+
+            if (gamepad1.b) {
+                yaw_drive = 0.8;
+            }
+            if (gamepad1.a) {
+                yaw_drive = -0.8;
+            }
+
+            if (gamepad1.right_trigger > 0 && rightSlide.getCurrentPosition() <= slideMidPos && leftSlide.getCurrentPosition() <= slideMidPos) {
                 axial_drive = gamepad1.right_trigger;
-            } else if (gamepad1.left_trigger > 0) {
+            } else if (gamepad1.left_trigger > 0 && rightSlide.getCurrentPosition() <= slideMidPos && leftSlide.getCurrentPosition() <= slideMidPos) {
                 axial_drive = -gamepad1.left_trigger;
-            } else {
+            } else if (rightSlide.getCurrentPosition() <= slideMidPos && leftSlide.getCurrentPosition() <= slideMidPos){
                 axial_drive = -gamepad1.left_stick_y;
+            } else if (rightSlide.getCurrentPosition() > slideMidPos && leftSlide.getCurrentPosition() > slideMidPos) {
+                axial_drive = -gamepad1.left_stick_y * FINE_DRIVE_POWER_SCALE;
             }
 
             //fine drive
@@ -165,12 +180,13 @@ public class MainTeleOp extends LinearOpMode {
                 axial_drive = FINE_DRIVE_POWER_SCALE;
             }
             if (gamepad1.right_bumper) {
-                yaw_drive = FINE_DRIVE_POWER_SCALE;
+                lateral_drive = 1;
             }
             if (gamepad1.left_bumper) {
-                yaw_drive = -FINE_DRIVE_POWER_SCALE;
+                lateral_drive = -1;
             }
 
+            //drone
             if (gamepad1.y) {
                 droneUnlock();
             } else {
@@ -184,35 +200,44 @@ public class MainTeleOp extends LinearOpMode {
             //OPERATOR CONTROLS
 
             //slide
-            if (gamepad2.y){
-                slide(slideHighPos);
+            if (gamepad2.dpad_right){
+                slidePos = slideHighPos;
+
             }
-            if (gamepad2.x){
-                slide(slideMidPos);
+            if (gamepad2.dpad_up){
+                slidePos = slideMidPos;
             }
-            if (gamepad2.b) {
-                slide(slideLowPos);
+            if (gamepad2.dpad_left) {
+                slidePos = slideLowPos;
             }
-            if (gamepad2.left_stick_button){
-                slide(slideMinPos);
+            if (gamepad2.left_stick_button || gamepad1.left_stick_button){
+                slidePos = slideMinPos;
+                outTake = false;
             }
+            if (gamepad2.dpad_down) {
+                slidePos = slideHangPos;
+            }
+
+            lift.PIDcontrol(slidePos, leftSlide, rightSlide);
 
             //arm
             if (outTake) {
                 armPlace();
                 if (gamepad2.a) {
                     clawRotatePlaceDown();
+                } else {
+                    clawRotatePlace();
                 }
-                if (gamepad2.dpad_down) {
+                if (gamepad2.x) {
                     outTake = false;
                 }
             } else {
-                if (gamepad2.dpad_down) {
+                if (gamepad2.x) {
                     clawRotateDown();
                     if (rightArm.getPosition() >= armDownPos) {
                         armVarPos(rightArm.getPosition() + rightArmIncrement);
                     }
-                } else if (gamepad2.dpad_up) {
+                } else if (gamepad2.y) {
                     outTake = true;
                     clawRotatePlace();
                 } else {
@@ -223,19 +248,29 @@ public class MainTeleOp extends LinearOpMode {
                 }
             }
 
-
-            //drone
-
             //claw
-            if (gamepad2.right_bumper) {
-                rightClawOpen();
-            } else {
-                rightClawClosed();
-            }
-            if (gamepad2.left_bumper) {
-                leftClawOpen();
-            } else {
-                leftClawClosed();
+            if (outTake) {
+                if (gamepad2.right_bumper) {
+                    leftClawOpen();
+                } else {
+                    leftClawClosed();
+                }
+                if (gamepad2.left_bumper) {
+                    rightClawOpen();
+                } else {
+                    rightClawClosed();
+                }
+            }  else {
+                if (gamepad2.right_bumper) {
+                    rightClawOpen();
+                } else {
+                    rightClawClosed();
+                }
+                if (gamepad2.left_bumper) {
+                    leftClawOpen();
+                } else {
+                    leftClawClosed();
+                }
             }
 
 
@@ -379,12 +414,6 @@ public class MainTeleOp extends LinearOpMode {
         rightClawRotate.setPosition(clawRotatePlaceDownPos);
     }
 
-    public boolean buffer(double desired, double actual) {
-        if (desired/actual < 1.02 && desired/actual > 0.98) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+
 
 }

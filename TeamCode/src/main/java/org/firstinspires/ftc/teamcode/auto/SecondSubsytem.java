@@ -11,35 +11,46 @@ public class SecondSubsytem {
     Servo leftClaw, rightClaw;
     Servo leftClawRotate, rightClawRotate;
     Servo drone;
+
+    double SLIDE_POWER_SCALE = 0.5;
+
     double clawClosedPos = 1;
     double clawOpenPos = 0.8;
+
     double droneLockPos = 0.3;
 
     //from teleop
     double armUpPos = 0.4;
-    double armDownPos = 0;
-    double armPlacePos = 0.85;
-    double armOffset = 0.015;
+    double armDownPos = 0.045;
+    double armPlacePos = 0.9;
+    double armOffset = 0.005;
 
-    double clawRotateDownPos = 0.67;
+    double clawRotateDownPos = 0.63;
     double clawRotateUpPos = 0;
-    double clawRotatePlacePos = 0.3;
+    double clawRotatePlacePos = 0.25;
     double clawRotatePlaceDownPos = 1;
 
-    int slideMax = 2485;
+    int slideMaxPos = 2850;
+    int slideHookPos = 2450;
+    int slideHighPos = 2350;
+    int slideMidPos = 1850;
+    int slideLowPos = 1250;
+    int slideHangPos = 400;
+    int slideMinPos = 0;
 
 
     public SecondSubsytem(HardwareMap hardwareMap) {
         leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
         rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
-        leftSlide.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightSlide.setDirection(DcMotorSimple.Direction.FORWARD);
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSlide.setTargetPosition(0);
         rightSlide.setTargetPosition(0);
         leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
 
         rightArm = hardwareMap.get(Servo.class, "rightArm");
         leftArm = hardwareMap.get(Servo.class, "leftArm");
@@ -75,8 +86,9 @@ public class SecondSubsytem {
         rightSlide.setTargetPosition(pos);
         leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftSlide.setPower(0.5);
-        rightSlide.setPower(0.5);
+        leftSlide.setPower(SLIDE_POWER_SCALE);
+        rightSlide.setPower(SLIDE_POWER_SCALE);
+
     }
 
     public void lockDrone () {

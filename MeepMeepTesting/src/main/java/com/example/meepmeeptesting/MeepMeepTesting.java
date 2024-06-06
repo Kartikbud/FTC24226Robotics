@@ -12,19 +12,65 @@ public class MeepMeepTesting {
 
 
         //red front right
-        /*Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-36, 60, Math.toRadians(90));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(startPose)
-                                .lineToSplineHeading(new Pose2d(32,-38, Math.toRadians(180)))
-                                .back(3)
-                                .lineToSplineHeading(new Pose2d(51,-43, Math.toRadians(180)))
-                                .lineToSplineHeading(new Pose2d(48,-58, Math.toRadians(180)))
-                                .build()
-                );*/
+                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(startPose)
+                        .addTemporalMarker(() -> {
+                            /*subsystem.leftClawClosed();
+                            subsystem.rightClawClosed();
+                            subsystem.armPos(subsystem.armUpPos);
+                            subsystem.clawRotatePos(subsystem.clawRotateUpPos);*/
+                        })
+                        .lineToSplineHeading(new Pose2d(-58,34, Math.toRadians(0)))
+                        .addTemporalMarker(() -> { //placing purple pixel
+                            //subsystem.clawRotatePos(subsystem.clawRotateDownPos);
+
+                        })
+                        .waitSeconds(0.5)
+                        .addTemporalMarker(() -> {
+                            //subsystem.armPos(subsystem.armDownPos);
+                        })
+                        .waitSeconds(0.5)
+                        .addTemporalMarker(() -> {
+                            //subsystem.rightClawOpen();
+                        })
+                        .waitSeconds(1)
+                        .back(3)
+                        .strafeRight(20)
+                        .forward(72)
+                        .turn(Math.toRadians(180))
+                        .waitSeconds(5)
+                        .lineToSplineHeading(new Pose2d(49,22, Math.toRadians(180)))
+                        .addTemporalMarker(() -> {
+                            //subsystem.armPos(subsystem.armPlacePos);
+                            //subsystem.clawRotatePos(subsystem.clawRotatePlacePos);
+                        })
+                        .waitSeconds(0.5)
+                        .addTemporalMarker(() -> {
+                            //subsystem.slidePos(subsystem.slideLowPos-100);
+                        })
+                        .waitSeconds(3)
+                        .addTemporalMarker(() -> {
+                            //subsystem.leftClawOpen();
+                        })
+                        .waitSeconds(0.5)
+                        .forward(3)
+                        .waitSeconds(0.2)
+                        .addTemporalMarker(() -> {
+                            /*subsystem.leftClawClosed();
+                            subsystem.rightClawClosed();
+                            subsystem.armPos(subsystem.armUpPos);
+                            subsystem.clawRotatePos(subsystem.clawRotateUpPos);*/
+                        })
+                        .addTemporalMarker(() -> {
+                            //subsystem.slidePos(0);
+                        })
+                        .waitSeconds(3)
+                        .build()
+                );
 
 
 
