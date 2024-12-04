@@ -179,11 +179,11 @@ public class MainTeleOp extends LinearOpMode {
             if (gamepad1.dpad_up) {
                 axial_drive = FINE_DRIVE_POWER_SCALE;
             }
-            if (gamepad1.right_bumper) {
-                lateral_drive = 1;
-            }
             if (gamepad1.left_bumper) {
                 lateral_drive = -1;
+            }
+            if (gamepad1.right_bumper) {
+                lateral_drive = 1;
             }
 
             //drone
@@ -381,12 +381,12 @@ public class MainTeleOp extends LinearOpMode {
         leftClaw.setPosition(clawClosedPos);
     }
 
-    public void rightClaw (double position) {
-        rightClaw.setPosition(position);
-    }
-
     public void leftClaw (double position) {
         leftClaw.setPosition(position);
+    }
+
+    public void rightClaw (double position) {
+        rightClaw.setPosition(position);
     }
 
     public void clawRotate (double position) {
